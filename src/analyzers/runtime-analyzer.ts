@@ -159,7 +159,7 @@ export class RuntimeAnalyzer {
         serverProcess.kill();
       }
 
-    } catch (error) {
+    } catch (error: any) {
       healthInfo.errors.push(`Server health check failed: ${error.message}`);
     }
 
@@ -176,7 +176,7 @@ export class RuntimeAnalyzer {
       let serverReady = false;
 
       // Listen for server ready indicators
-      serverProcess.stdout?.on('data', (data) => {
+      serverProcess.stdout?.on('data', (data: any) => {
         const output = data.toString();
         if (output.includes('listening') || output.includes('started') || output.includes('ready')) {
           serverReady = true;
@@ -184,7 +184,7 @@ export class RuntimeAnalyzer {
         }
       });
 
-      serverProcess.stderr?.on('data', (data) => {
+      serverProcess.stderr?.on('data', (data: any) => {
         const error = data.toString();
         if (!serverReady) {
           reject(new Error(error));
@@ -232,7 +232,7 @@ export class RuntimeAnalyzer {
         // Test rate limiting
         behavior.rateLimit = await this.testRateLimit(tool);
 
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Failed to analyze tool ${tool.name}:`, error.message);
       }
 
@@ -285,16 +285,16 @@ export class RuntimeAnalyzer {
     const startTime = Date.now();
 
     while (Date.now() - startTime < testDuration) {
-      for (const tool of tools) {
-        try {
-          const testStart = Date.now();
-          await this.callTool(tool, this.generateValidInput(tool));
-          const responseTime = Date.now() - testStart;
-          responseTimes.push(responseTime);
-        } catch (error) {
-          errorCount++;
+        for (const tool of tools) {
+          try {
+            const testStart = Date.now();
+            await this.callTool(tool, this.generateValidInput(tool));
+            const responseTime = Date.now() - testStart;
+            responseTimes.push(responseTime);
+          } catch (error: any) {
+            errorCount++;
+          }
         }
-      }
     }
 
     const averageResponseTime = responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length || 0;
@@ -330,7 +330,7 @@ export class RuntimeAnalyzer {
       }
 
       return true;
-    } catch (error) {
+    } catch (error: any) {
       // If tool throws proper errors for invalid input, that's good
       return true;
     }
@@ -351,7 +351,7 @@ export class RuntimeAnalyzer {
       }
 
       return true;
-    } catch (error) {
+    } catch (error: any) {
       return true; // Error handling is better than returning unsanitized data
     }
   }
@@ -380,14 +380,14 @@ export class RuntimeAnalyzer {
             // Bad: no error handling
             return false;
           }
-        } catch (error) {
+        } catch (error: any) {
           // Good: proper error throwing
           continue;
         }
       }
 
       return true;
-    } catch (error) {
+    } catch (error: any) {
       return false;
     }
   }
@@ -424,7 +424,7 @@ export class RuntimeAnalyzer {
      }
 
      return rateLimit;
-   } catch (error) {
+   } catch (error: any) {
      return null;
    }
  }
@@ -444,7 +444,7 @@ export class RuntimeAnalyzer {
        details: dangerous ? 'Tool appears vulnerable to SQL injection' : 'No SQL injection detected',
        severity: dangerous ? 'high' : 'low'
      };
-   } catch (error) {
+   } catch (error: any) {
      return {
        testName: `SQL Injection: ${payload.substring(0, 20)}...`,
        category: 'injection',
@@ -470,7 +470,7 @@ export class RuntimeAnalyzer {
        details: dangerous ? 'Tool appears vulnerable to command injection' : 'No command injection detected',
        severity: dangerous ? 'high' : 'low'
      };
-   } catch (error) {
+   } catch (error: any) {
      return {
        testName: `Command Injection: ${payload.substring(0, 20)}...`,
        category: 'injection',
@@ -496,7 +496,7 @@ export class RuntimeAnalyzer {
        details: vulnerable ? 'Tool reflects unescaped user input' : 'XSS payload properly handled',
        severity: vulnerable ? 'medium' : 'low'
      };
-   } catch (error) {
+   } catch (error: any) {
      return {
        testName: `XSS: ${payload.substring(0, 20)}...`,
        category: 'xss',
@@ -522,7 +522,7 @@ export class RuntimeAnalyzer {
        details: dangerous ? 'Tool appears vulnerable to path traversal' : 'No path traversal detected',
        severity: dangerous ? 'high' : 'low'
      };
-   } catch (error) {
+   } catch (error: any) {
      return {
        testName: `Path Traversal: ${payload.substring(0, 20)}...`,
        category: 'path-traversal',
@@ -557,7 +557,7 @@ export class RuntimeAnalyzer {
          'Tool handled oversized input appropriately',
        severity: vulnerable ? 'medium' : 'low'
      };
-   } catch (error) {
+   } catch (error: any) {
      return {
        testName: 'DoS: Oversized Input',
        category: 'dos',
@@ -674,7 +674,7 @@ export class RuntimeAnalyzer {
      // This is a simplified implementation
      // In a real implementation, you'd use proper process monitoring
      return { memory: 50, cpu: 10 }; // Mock values
-   } catch (error) {
+   } catch (error: any) {
      return { memory: 0, cpu: 0 };
    }
  }

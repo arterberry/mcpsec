@@ -10,8 +10,13 @@
         "forceConsistentCasingInFileNames": true,
         "skipLibCheck": true,
         "declaration": true,
-        "sourceMap": true
+        "sourceMap": true,
+        "types": [],
+        "baseUrl": ".",
+        "paths": {
+            "typescript": ["./node_modules/typescript/index.d.ts"]
+        }
     },
-    "include": ["src"],
-    "exclude": ["node_modules", "dist", "**/*.test.ts"]
+    "include": [],
+    "exclude": []
 }

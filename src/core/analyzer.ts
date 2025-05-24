@@ -31,7 +31,7 @@ export class MCPSecurityAnalyzer {
       try {
         const ruleViolations = await rule.check(context);
         violations.push(...ruleViolations);
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Error running rule ${rule.id}:`, error);
         violations.push({
           ruleId: rule.id,
@@ -101,7 +101,7 @@ export class MCPSecurityAnalyzer {
         ts.ScriptTarget.Latest,
         true
       );
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`Failed to parse TypeScript file ${filePath}:`, error);
       return undefined;
     }
@@ -111,7 +111,7 @@ export class MCPSecurityAnalyzer {
     try {
       const packagePath = join(projectPath, 'package.json');
       return JSON.parse(readFileSync(packagePath, 'utf-8'));
-    } catch (error) {
+    } catch (error: any) {
       return {};
     }
   }

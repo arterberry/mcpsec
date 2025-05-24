@@ -40,16 +40,16 @@ program
 
       // Apply CLI overrides
       if (options.foxCorp) {
-        config.foxCorp = { ...config.foxCorp, streamingAssets: true };
+        config.foxCorp = { ...config.foxCorp!, streamingAssets: true };
       }
       if (options.streaming) {
-        config.foxCorp = { ...config.foxCorp, streamingAssets: true };
+        config.foxCorp = { ...config.foxCorp!, streamingAssets: true };
       }
       if (options.conviva) {
-        config.foxCorp = { ...config.foxCorp, convivaIntegration: true };
+        config.foxCorp = { ...config.foxCorp!, convivaIntegration: true };
       }
       if (options.harValidation) {
-        config.foxCorp = { ...config.foxCorp, harValidation: true };
+        config.foxCorp = { ...config.foxCorp!, harValidation: true };
       }
 
       // Create analyzer and run analysis
@@ -89,7 +89,7 @@ program
         process.exit(0);
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(chalk.red('❌ Analysis failed:'), error.message);
       process.exit(1);
     }
@@ -105,7 +105,7 @@ program
       const configManager = ConfigManager.getInstance();
       await configManager.initializeConfig(projectPath, options.template);
       console.log(chalk.green('✅ MCPSec configuration initialized'));
-    } catch (error) {
+    } catch (error: any) {
       console.error(chalk.red('❌ Configuration initialization failed:'), error.message);
       process.exit(1);
     }
@@ -144,7 +144,7 @@ program
         console.log('');
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(chalk.red('❌ Failed to list rules:'), error.message);
       process.exit(1);
     }
@@ -165,13 +165,13 @@ program
         console.log(chalk.red('❌ Configuration is invalid'));
         process.exit(1);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(chalk.red('❌ Configuration validation failed:'), error.message);
       process.exit(1);
     }
   });
 
-if (require.main === module) {
+if ((require as any).main === module) {
   program.parse();
 }
 
