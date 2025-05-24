@@ -302,7 +302,8 @@ async function checkConvivaToolSecurity(tool: any, context: AnalysisContext): Pr
             severity: 'error',
             message: `Conviva tool '${tool.name}' lacks session ID validation`,
             evidence: 'Session ID validation required for Conviva integration',
-            fix: 'Add session ID format validation and sanitization'
+            fix: 'Add session ID format validation and sanitization',
+            file: implFile?.path
         });
     }
 
