@@ -6,6 +6,7 @@ export interface MCPSecurityRule {
   category: SecurityCategory;
   mandatory: boolean;
   check: (context: AnalysisContext) => Promise<RuleViolation[]>;
+  [key: string]: any; // allow rule helpers
 }
 
 export interface RuleViolation {
@@ -44,6 +45,17 @@ export interface MCPTool {
   rateLimit?: RateLimit;
 }
 
+export interface MCPResource {
+  name: string;
+  uri: string;
+  type: string;
+}
+
+export interface MCPPrompt {
+  name: string;
+  template: string;
+}
+
 export interface MCPSecConfig {
   rules: Record<string, RuleConfig>;
   extends?: string[];
@@ -57,9 +69,9 @@ export interface MCPSecConfig {
 
 export interface FoxCorpConfig {
   streamingAssets: boolean;
-  convivaIntegration: boolean;
-  harValidation: boolean;
-  auditLevel: 'basic' | 'comprehensive' | 'forensic';
+  convivaIntegration?: boolean;
+  harValidation?: boolean;
+  auditLevel?: 'basic' | 'comprehensive' | 'forensic';
 }
 
 export interface RuleConfig {
