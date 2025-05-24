@@ -1,6 +1,3 @@
-### /tests/utils/test-helpers.ts
-
-```typescript
 import * as ts from 'typescript';
 import { AnalysisContext, MCPServerInfo, SourceFile, MCPSecConfig } from '../../src/core/types';
 
