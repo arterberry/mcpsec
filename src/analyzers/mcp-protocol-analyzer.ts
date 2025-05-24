@@ -1,4 +1,4 @@
-import { SourceFile, MCPServerInfo, MCPTool, MCPResource, MCPPrompt } from '../core/types';
+import { SourceFile, MCPServerInfo, MCPTool } from '../core/types';
 import * as ts from 'typescript';
 
 export interface MCPProtocolAnalysis {
