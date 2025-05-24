@@ -267,11 +267,15 @@ function checkConvivaPrivacy(context: AnalysisContext): RuleViolation[] {
     );
 
     if (!hasConsentHandling) {
-        violations.push({
-            ruleId: 'conviva-validation',
-            severity: 'warning',
-            message: 'No user consent handling found for Conviva analytics',
-            fix: 'Implement user consent collection before sending analytics data'
+        context.sourceFiles.forEach(file => {
+            violations.push({
+                ruleId: 'conviva-validation',
+                severity: 'warning',
+                message: 'No user consent handling found for Conviva analytics',
+                fix: 'Implement user consent collection before sending analytics data',
+                file: file.path,
+                evidence: `File content: ${file.content.slice(0, 100)}...`
+            });
         });
     }
 
