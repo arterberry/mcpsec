@@ -62,7 +62,7 @@ program
 
       // Output results
       if (options.output) {
-        await reporter.writeReport(report, options.output, options.format);
+        await reporter.writeReport(report, options.output);
         console.log(chalk.green(`✅ Report written to ${options.output}`));
       } else {
         console.log(report);

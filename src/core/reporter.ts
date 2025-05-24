@@ -1,5 +1,5 @@
 import { RuleViolation, MCPSecConfig } from './types';
-import { writeFileSync } from 'fs';
+import { promises as fs } from 'fs';
 import chalk from 'chalk';
 
 export class SecurityReporter {
@@ -19,8 +19,8 @@ export class SecurityReporter {
     }
   }
 
-  async writeReport(report: string, outputPath: string, format: string): Promise<void> {
-    writeFileSync(outputPath, report, 'utf-8');
+  async writeReport(report: string, outputPath: string): Promise<void> {
+    await fs.writeFile(outputPath, report, 'utf-8');
   }
 
   private generateTextReport(violations: RuleViolation[]): string {
