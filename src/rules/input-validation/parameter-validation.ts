@@ -1,7 +1,7 @@
 import { MCPSecurityRule, AnalysisContext, RuleViolation } from '../../core/types';
 import * as ts from 'typescript';
 
-export const parameterValidation = {
+const parameterValidationImpl = {
     id: 'parameter-validation',
     name: 'Parameter Validation',
     description: 'Ensures all tool parameters are properly validated according to their schemas',
@@ -705,4 +705,6 @@ export const parameterValidation = {
   getLineNumber(sourceFile: ts.SourceFile, node: ts.Node): number {
         return sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1;
     }
-} as MCPSecurityRule;
+};
+
+export const parameterValidation = parameterValidationImpl as MCPSecurityRule;
