@@ -1,7 +1,7 @@
 import { MCPSecurityRule, AnalysisContext, RuleViolation } from '../../core/types';
 import * as ts from 'typescript';
 
-export const permissionChecks: MCPSecurityRule = {
+export const permissionChecks = {
     id: 'permission-checks',
     name: 'Permission Checks',
     description: 'Ensures proper permission validation before tool execution',
@@ -23,9 +23,8 @@ export const permissionChecks: MCPSecurityRule = {
         violations.push(...systemViolations);
 
         return violations;
-    }
-
-  private async checkToolPermissions(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
+    },
+  async checkToolPermissions(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
         const violations: RuleViolation[] = [];
 
         // Check if tool has defined permissions
@@ -52,9 +51,8 @@ export const permissionChecks: MCPSecurityRule = {
         violations.push(...escalationViolations);
 
         return violations;
-    }
-
-  private validatePermissionFormat(tool: any, context: AnalysisContext): RuleViolation[] {
+    },
+  validatePermissionFormat(tool: any, context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         for (const permission of tool.permissions) {
@@ -88,15 +86,13 @@ export const permissionChecks: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
-  private isValidPermissionFormat(permission: string): boolean {
+    },
+  isValidPermissionFormat(permission: string): boolean {
         // Standard format: resource:action
         const permissionPattern = /^[a-z][a-z0-9-]*:[a-z][a-z0-9-]*$/;
         return permissionPattern.test(permission);
-    }
-
-  private isOverlyBroadPermission(permission: string): boolean {
+    },
+  isOverlyBroadPermission(permission: string): boolean {
         const broadPatterns = [
             /.*:\*/,      // Any action wildcard
             /\*:.*/,      // Any resource wildcard
@@ -107,9 +103,8 @@ export const permissionChecks: MCPSecurityRule = {
         ];
 
         return broadPatterns.some(pattern => pattern.test(permission));
-    }
-
-  private isStreamingPermission(permission: string): boolean {
+    },
+  isStreamingPermission(permission: string): boolean {
         const streamingPatterns = [
             /stream/i,
             /media/i,
@@ -119,9 +114,8 @@ export const permissionChecks: MCPSecurityRule = {
         ];
 
         return streamingPatterns.some(pattern => pattern.test(permission));
-    }
-
-  private validateStreamingPermission(tool: any, permission: string, context: AnalysisContext): RuleViolation[] {
+    },
+  validateStreamingPermission(tool: any, permission: string, context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Fox Corp streaming permissions must be specific
@@ -150,9 +144,8 @@ export const permissionChecks: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
-  private async checkPermissionImplementation(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
+    },
+  async checkPermissionImplementation(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
         const violations: RuleViolation[] = [];
 
         // Find tool implementation
@@ -209,9 +202,8 @@ export const permissionChecks: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
-  private hasPermissionValidation(file: any): boolean {
+    },
+  hasPermissionValidation(file: any): boolean {
         const content = file.content.toLowerCase();
         const permissionPatterns = [
             /check.*permission/,
@@ -225,9 +217,8 @@ export const permissionChecks: MCPSecurityRule = {
         ];
 
         return permissionPatterns.some(pattern => pattern.test(content));
-    }
-
-  private hasPermissionErrorHandling(file: any): boolean {
+    },
+  hasPermissionErrorHandling(file: any): boolean {
         const content = file.content.toLowerCase();
         const errorPatterns = [
             /403/,  // Forbidden status code
@@ -240,9 +231,8 @@ export const permissionChecks: MCPSecurityRule = {
         ];
 
         return errorPatterns.some(pattern => pattern.test(content));
-    }
-
-  private hasContextBasedValidation(file: any): boolean {
+    },
+  hasContextBasedValidation(file: any): boolean {
         const content = file.content.toLowerCase();
         const contextPatterns = [
             /user.*permission/,
@@ -255,9 +245,8 @@ export const permissionChecks: MCPSecurityRule = {
         ];
 
         return contextPatterns.some(pattern => pattern.test(content));
-    }
-
-  private requiresContextValidation(tool: any): boolean {
+    },
+  requiresContextValidation(tool: any): boolean {
         // Tools that modify data or access sensitive resources need context validation
         const sensitivePatterns = [
             /write/i,
@@ -277,9 +266,8 @@ export const permissionChecks: MCPSecurityRule = {
             pattern.test(tool.description || '') ||
             (tool.permissions && tool.permissions.some((perm: string) => pattern.test(perm)))
         );
-    }
-
-  private async checkPrivilegeEscalation(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
+    },
+  async checkPrivilegeEscalation(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
         const violations: RuleViolation[] = [];
 
         const implFile = context.sourceFiles.find(file =>
@@ -343,9 +331,8 @@ export const permissionChecks: MCPSecurityRule = {
 
         visitor(implFile.ast);
         return violations;
-    }
-
-  private isPermissionModification(callText: string): boolean {
+    },
+  isPermissionModification(callText: string): boolean {
         const modificationPatterns = [
             /set.*permission/i,
             /grant.*permission/i,
@@ -358,9 +345,8 @@ export const permissionChecks: MCPSecurityRule = {
         ];
 
         return modificationPatterns.some(pattern => pattern.test(callText));
-    }
-
-  private isSudoCall(callText: string): boolean {
+    },
+  isSudoCall(callText: string): boolean {
         const sudoPatterns = [
             /sudo/i,
             /runas/i,
@@ -371,9 +357,8 @@ export const permissionChecks: MCPSecurityRule = {
         ];
 
         return sudoPatterns.some(pattern => pattern.test(callText));
-    }
-
-  private isPermissionBypass(condition: string): boolean {
+    },
+  isPermissionBypass(condition: string): boolean {
         const bypassPatterns = [
             /skip.*permission/i,
             /bypass.*auth/i,
@@ -384,9 +369,8 @@ export const permissionChecks: MCPSecurityRule = {
         ];
 
         return bypassPatterns.some(pattern => pattern.test(condition));
-    }
-
-  private checkPermissionSystem(context: AnalysisContext): RuleViolation[] {
+    },
+  checkPermissionSystem(context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Check for permission system implementation
@@ -422,9 +406,8 @@ export const permissionChecks: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
-  private getLineNumber(sourceFile: ts.SourceFile, node: ts.Node): number {
+    },
+  getLineNumber(sourceFile: ts.SourceFile, node: ts.Node): number {
         return sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1;
     }
-};
+} as MCPSecurityRule;

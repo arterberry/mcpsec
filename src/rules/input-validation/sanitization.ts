@@ -1,7 +1,7 @@
 import { MCPSecurityRule, AnalysisContext, RuleViolation } from '../../core/types';
 import * as ts from 'typescript';
 
-export const sanitizationRequired: MCPSecurityRule = {
+export const sanitizationRequired = {
     id: 'input-sanitization',
     name: 'Input Sanitization Required',
     description: 'Ensures all user inputs are properly sanitized before processing',
@@ -27,9 +27,8 @@ export const sanitizationRequired: MCPSecurityRule = {
         violations.push(...libraryViolations);
 
         return violations;
-    }
-
-  private async checkToolSanitization(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
+    },
+  async checkToolSanitization(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
         const violations: RuleViolation[] = [];
 
         // Find tool implementation
@@ -79,9 +78,8 @@ export const sanitizationRequired: MCPSecurityRule = {
         violations.push(...outputViolations);
 
         return violations;
-    }
-
-  private extractInputParameters(file: any, tool: any): Array<{ name: string, type: string, line: number }> {
+    },
+  extractInputParameters(file: any, tool: any): Array<{ name: string, type: string, line: number }> {
         const parameters: Array<{ name: string, type: string, line: number }> = [];
 
         if (!file.ast) return parameters;
@@ -123,9 +121,8 @@ export const sanitizationRequired: MCPSecurityRule = {
 
         visitor(file.ast);
         return parameters;
-    }
-
-  private getFunctionName(node: ts.FunctionDeclaration | ts.MethodDeclaration | ts.ArrowFunction): string | null {
+    },
+  getFunctionName(node: ts.FunctionDeclaration | ts.MethodDeclaration | ts.ArrowFunction): string | null {
         if (ts.isFunctionDeclaration(node) && node.name) {
             return node.name.text;
         }
@@ -133,9 +130,8 @@ export const sanitizationRequired: MCPSecurityRule = {
             return node.name.text;
         }
         return null;
-    }
-
-  private isParameterSanitized(param: { name: string, type: string, line: number }, file: any): boolean {
+    },
+  isParameterSanitized(param: { name: string, type: string, line: number }, file: any): boolean {
         const content = file.content;
 
         // Look for sanitization calls near the parameter usage
@@ -151,9 +147,8 @@ export const sanitizationRequired: MCPSecurityRule = {
         ];
 
         return sanitizationPatterns.some(pattern => pattern.test(content));
-    }
-
-  private checkSpecificSanitization(
+    },
+  checkSpecificSanitization(
         param: { name: string, type: string, line: number },
         tool: any,
         file: any,
@@ -237,9 +232,8 @@ export const sanitizationRequired: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
-  private needsHTMLSanitization(param: { name: string, type: string }, file: any): boolean {
+    },
+  needsHTMLSanitization(param: { name: string, type: string }, file: any): boolean {
         const content = file.content;
         const htmlPatterns = [
             new RegExp(`${param.name}.*innerHTML`, 'i'),
@@ -251,9 +245,8 @@ export const sanitizationRequired: MCPSecurityRule = {
         ];
 
         return htmlPatterns.some(pattern => pattern.test(content));
-    }
-
-  private hasHTMLSanitization(param: { name: string, type: string }, file: any): boolean {
+    },
+  hasHTMLSanitization(param: { name: string, type: string }, file: any): boolean {
         const content = file.content;
         const sanitizationPatterns = [
             /dompurify/i,
@@ -265,9 +258,8 @@ export const sanitizationRequired: MCPSecurityRule = {
 
         const paramContext = this.getParameterContext(param.name, file);
         return sanitizationPatterns.some(pattern => pattern.test(paramContext));
-    }
-
-  private needsSQLSanitization(param: { name: string, type: string }, file: any): boolean {
+    },
+  needsSQLSanitization(param: { name: string, type: string }, file: any): boolean {
         const content = file.content;
         const sqlPatterns = [
             new RegExp(`query.*${param.name}`, 'i'),
@@ -280,9 +272,8 @@ export const sanitizationRequired: MCPSecurityRule = {
         ];
 
         return sqlPatterns.some(pattern => pattern.test(content));
-    }
-
-  private hasSQLSanitization(param: { name: string, type: string }, file: any): boolean {
+    },
+  hasSQLSanitization(param: { name: string, type: string }, file: any): boolean {
         const paramContext = this.getParameterContext(param.name, file);
 
         // Check for parameterized queries
@@ -302,9 +293,8 @@ export const sanitizationRequired: MCPSecurityRule = {
 
         return parameterizedPatterns.some(pattern => pattern.test(paramContext)) ||
             escapePatterns.some(pattern => pattern.test(paramContext));
-    }
-
-  private needsPathSanitization(param: { name: string, type: string }, file: any): boolean {
+    },
+  needsPathSanitization(param: { name: string, type: string }, file: any): boolean {
         const content = file.content;
         const pathPatterns = [
             new RegExp(`readFile.*${param.name}`, 'i'),
@@ -316,9 +306,8 @@ export const sanitizationRequired: MCPSecurityRule = {
         ];
 
         return pathPatterns.some(pattern => pattern.test(content));
-    }
-
-  private hasPathSanitization(param: { name: string, type: string }, file: any): boolean {
+    },
+  hasPathSanitization(param: { name: string, type: string }, file: any): boolean {
         const paramContext = this.getParameterContext(param.name, file);
         const sanitizationPatterns = [
             /path\.normalize/i,
@@ -331,9 +320,8 @@ export const sanitizationRequired: MCPSecurityRule = {
         ];
 
         return sanitizationPatterns.some(pattern => pattern.test(paramContext));
-    }
-
-  private needsURLSanitization(param: { name: string, type: string }, file: any): boolean {
+    },
+  needsURLSanitization(param: { name: string, type: string }, file: any): boolean {
         const content = file.content;
         const urlPatterns = [
             new RegExp(`fetch.*${param.name}`, 'i'),
@@ -345,9 +333,8 @@ export const sanitizationRequired: MCPSecurityRule = {
         ];
 
         return urlPatterns.some(pattern => pattern.test(content));
-    }
-
-  private hasURLSanitization(param: { name: string, type: string }, file: any): boolean {
+    },
+  hasURLSanitization(param: { name: string, type: string }, file: any): boolean {
         const paramContext = this.getParameterContext(param.name, file);
         const sanitizationPatterns = [
             /url.*parse/i,
@@ -359,9 +346,8 @@ export const sanitizationRequired: MCPSecurityRule = {
         ];
 
         return sanitizationPatterns.some(pattern => pattern.test(paramContext));
-    }
-
-  private isStreamingParameter(param: { name: string, type: string }, file: any): boolean {
+    },
+  isStreamingParameter(param: { name: string, type: string }, file: any): boolean {
         const streamingPatterns = [
             /stream/i,
             /video/i,
@@ -374,9 +360,8 @@ export const sanitizationRequired: MCPSecurityRule = {
 
         return streamingPatterns.some(pattern => pattern.test(param.name)) ||
             streamingPatterns.some(pattern => pattern.test(param.type));
-    }
-
-  private hasStreamingSanitization(param: { name: string, type: string }, file: any): boolean {
+    },
+  hasStreamingSanitization(param: { name: string, type: string }, file: any): boolean {
         const paramContext = this.getParameterContext(param.name, file);
         const sanitizationPatterns = [
             /validate.*stream/i,
@@ -388,9 +373,8 @@ export const sanitizationRequired: MCPSecurityRule = {
         ];
 
         return sanitizationPatterns.some(pattern => pattern.test(paramContext));
-    }
-
-  private getParameterContext(paramName: string, file: any): string {
+    },
+  getParameterContext(paramName: string, file: any): string {
         const content = file.content;
         const lines = content.split('\n');
         const contextLines: string[] = [];
@@ -405,9 +389,8 @@ export const sanitizationRequired: MCPSecurityRule = {
         }
 
         return contextLines.join('\n');
-    }
-
-  private checkDirectInputUsage(file: any, tool: any): RuleViolation[] {
+    },
+  checkDirectInputUsage(file: any, tool: any): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         if (!file.ast) return violations;
@@ -439,9 +422,8 @@ export const sanitizationRequired: MCPSecurityRule = {
 
         visitor(file.ast);
         return violations;
-    }
-
-  private isDirectUserInput(propertyAccess: string): boolean {
+    },
+  isDirectUserInput(propertyAccess: string): boolean {
         const inputPatterns = [
             /req\.body/,
             /req\.query/,
@@ -457,9 +439,8 @@ export const sanitizationRequired: MCPSecurityRule = {
         ];
 
         return inputPatterns.some(pattern => pattern.test(propertyAccess));
-    }
-
-  private isInSanitizationContext(node: ts.Node, sourceFile: ts.SourceFile): boolean {
+    },
+  isInSanitizationContext(node: ts.Node, sourceFile: ts.SourceFile): boolean {
         // Check if the node is within a sanitization function call
         let current = node.parent;
 
@@ -474,9 +455,8 @@ export const sanitizationRequired: MCPSecurityRule = {
         }
 
         return false;
-    }
-
-  private isSanitizationCall(callText: string): boolean {
+    },
+  isSanitizationCall(callText: string): boolean {
         const sanitizationPatterns = [
             /sanitize/i,
             /clean/i,
@@ -488,9 +468,8 @@ export const sanitizationRequired: MCPSecurityRule = {
         ];
 
         return sanitizationPatterns.some(pattern => pattern.test(callText));
-    }
-
-  private checkOutputSanitization(file: any, tool: any): RuleViolation[] {
+    },
+  checkOutputSanitization(file: any, tool: any): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         if (!file.ast) return violations;
@@ -536,9 +515,8 @@ export const sanitizationRequired: MCPSecurityRule = {
 
         visitor(file.ast);
         return violations;
-    }
-
-  private containsUnsanitizedInput(text: string, file: any): boolean {
+    },
+  containsUnsanitizedInput(text: string, file: any): boolean {
         const inputPatterns = [
             /req\./,
             /request\./,
@@ -559,9 +537,8 @@ export const sanitizationRequired: MCPSecurityRule = {
         const hasSanitization = sanitizationPatterns.some(pattern => pattern.test(text));
 
         return hasInput && !hasSanitization;
-    }
-
-  private isResponseCall(callText: string): boolean {
+    },
+  isResponseCall(callText: string): boolean {
         const responsePatterns = [
             /res\.send/,
             /res\.json/,
@@ -572,9 +549,8 @@ export const sanitizationRequired: MCPSecurityRule = {
         ];
 
         return responsePatterns.some(pattern => pattern.test(callText));
-    }
-
-  private checkGlobalSanitization(context: AnalysisContext): RuleViolation[] {
+    },
+  checkGlobalSanitization(context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Check for sanitization middleware
@@ -592,9 +568,8 @@ export const sanitizationRequired: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
-  private hasSanitizationMiddleware(file: any): boolean {
+    },
+  hasSanitizationMiddleware(file: any): boolean {
         const content = file.content.toLowerCase();
         const middlewarePatterns = [
             /sanitize.*middleware/,
@@ -604,9 +579,8 @@ export const sanitizationRequired: MCPSecurityRule = {
         ];
 
         return middlewarePatterns.some(pattern => pattern.test(content));
-    }
-
-  private checkSanitizationLibraries(context: AnalysisContext): RuleViolation[] {
+    },
+  checkSanitizationLibraries(context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         const sanitizationLibs = [
@@ -634,9 +608,8 @@ export const sanitizationRequired: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
-  private getLineNumber(sourceFile: ts.SourceFile, node: ts.Node): number {
+    },
+  getLineNumber(sourceFile: ts.SourceFile, node: ts.Node): number {
         return sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1;
     }
-};
+} as MCPSecurityRule;

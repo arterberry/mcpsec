@@ -1,7 +1,7 @@
 import { MCPSecurityRule, AnalysisContext, RuleViolation } from '../../core/types';
 import * as ts from 'typescript';
 
-export const auditLoggingRequirements: MCPSecurityRule = {
+export const auditLoggingRequirements = {
 	id: 'audit-logging',
 	name: 'Audit Logging Requirements',
 	description: 'Ensures comprehensive audit logging for Fox Corp compliance',
@@ -23,9 +23,8 @@ export const auditLoggingRequirements: MCPSecurityRule = {
 		violations.push(...globalViolations);
 
 		return violations;
-	}
-
-  private async checkToolLogging(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
+	},
+  async checkToolLogging(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
 		const violations: RuleViolation[] = [];
 
 		// Find tool implementation
@@ -88,9 +87,8 @@ export const auditLoggingRequirements: MCPSecurityRule = {
 		}
 
 		return violations;
-	}
-
-  private checkForLoggingStatements(file: any): { found: boolean; locations: number[] } {
+	},
+  checkForLoggingStatements(file: any): { found: boolean; locations: number[] } {
 		const locations: number[] = [];
 		let found = false;
 
@@ -111,9 +109,8 @@ export const auditLoggingRequirements: MCPSecurityRule = {
 
 		visitor(file.ast);
 		return { found, locations };
-	}
-
-  private checkForErrorLogging(file: any): { found: boolean; locations: number[] } {
+	},
+  checkForErrorLogging(file: any): { found: boolean; locations: number[] } {
 		const locations: number[] = [];
 		let found = false;
 
@@ -133,9 +130,8 @@ export const auditLoggingRequirements: MCPSecurityRule = {
 
 		visitor(file.ast);
 		return { found, locations };
-	}
-
-  private checkForSecurityEventLogging(file: any): { found: boolean; locations: number[] } {
+	},
+  checkForSecurityEventLogging(file: any): { found: boolean; locations: number[] } {
 		const locations: number[] = [];
 		let found = false;
 
@@ -165,9 +161,8 @@ export const auditLoggingRequirements: MCPSecurityRule = {
 
 		visitor(file.ast);
 		return { found, locations };
-	}
-
-private checkFoxCorpLoggingRequirements(tool: any, file: any, context: AnalysisContext): RuleViolation[] {
+	},
+  checkFoxCorpLoggingRequirements(tool: any, file: any, context: AnalysisContext): RuleViolation[] {
 		const violations: RuleViolation[] = [];
 
 		// Fox Corp requires specific fields in audit logs
@@ -212,9 +207,8 @@ private checkFoxCorpLoggingRequirements(tool: any, file: any, context: AnalysisC
 		}
 
 		return violations;
-	}
-
- private findLoggingCalls(file: any): Array<{ line: number; args: ts.Node[] }> {
+	},
+  findLoggingCalls(file: any): Array<{ line: number; args: ts.Node[] }> {
 		const calls: Array<{ line: number; args: ts.Node[] }> = [];
 
 		const visitor = (node: ts.Node) => {
@@ -235,9 +229,8 @@ private checkFoxCorpLoggingRequirements(tool: any, file: any, context: AnalysisC
 
 		visitor(file.ast);
 		return calls;
-	}
-
- private checkRequiredFields(call: any, requiredFields: string[], file: any): string[] {
+	},
+  checkRequiredFields(call: any, requiredFields: string[], file: any): string[] {
 		const missingFields: string[] = [];
 
 		// Simple heuristic: check if the logging call includes the required fields
@@ -250,9 +243,8 @@ private checkFoxCorpLoggingRequirements(tool: any, file: any, context: AnalysisC
 		}
 
 		return missingFields;
-	}
-
- private checkPIIInLogs(file: any, context: AnalysisContext): RuleViolation[] {
+	},
+  checkPIIInLogs(file: any, context: AnalysisContext): RuleViolation[] {
 		const violations: RuleViolation[] = [];
 		const piiPatterns = [
 			/email/i,
@@ -286,9 +278,8 @@ private checkFoxCorpLoggingRequirements(tool: any, file: any, context: AnalysisC
 
 		visitor(file.ast);
 		return violations;
-	}
-
- private checkStreamingContentLogging(file: any, context: AnalysisContext): RuleViolation[] {
+	},
+  checkStreamingContentLogging(file: any, context: AnalysisContext): RuleViolation[] {
 		const violations: RuleViolation[] = [];
 
 		// Streaming content access should be logged with specific details
@@ -322,9 +313,8 @@ private checkFoxCorpLoggingRequirements(tool: any, file: any, context: AnalysisC
 
 		visitor(file.ast);
 		return violations;
-	}
-
- private isHighRiskTool(tool: any): boolean {
+	},
+  isHighRiskTool(tool: any): boolean {
 		const highRiskPatterns = [
 			/admin/i,
 			/system/i,
@@ -339,9 +329,8 @@ private checkFoxCorpLoggingRequirements(tool: any, file: any, context: AnalysisC
 		return highRiskPatterns.some(pattern =>
 			pattern.test(tool.name) || pattern.test(tool.description)
 		);
-	}
-
- private isStreamingRelatedTool(tool: any): boolean {
+	},
+  isStreamingRelatedTool(tool: any): boolean {
 		const streamingPatterns = [
 			/stream/i,
 			/video/i,
@@ -353,9 +342,8 @@ private checkFoxCorpLoggingRequirements(tool: any, file: any, context: AnalysisC
 		return streamingPatterns.some(pattern =>
 			pattern.test(tool.name) || pattern.test(tool.description)
 		);
-	}
-
- private containsLoggingInBlock(block: ts.Block): boolean {
+	},
+  containsLoggingInBlock(block: ts.Block): boolean {
 		let hasLogging = false;
 
 		const visitor = (node: ts.Node) => {
@@ -369,9 +357,8 @@ private checkFoxCorpLoggingRequirements(tool: any, file: any, context: AnalysisC
 
 		visitor(block);
 		return hasLogging;
-	}
-
- private isLoggingCall(node: ts.CallExpression): boolean {
+	},
+  isLoggingCall(node: ts.CallExpression): boolean {
 		if (ts.isPropertyAccessExpression(node.expression)) {
 			const obj = node.expression.expression;
 			const method = node.expression.name.text;
@@ -381,9 +368,8 @@ private checkFoxCorpLoggingRequirements(tool: any, file: any, context: AnalysisC
 					['log', 'info', 'warn', 'error'].includes(method));
 		}
 		return false;
-	}
-
- private hasNearbyLogging(node: ts.Node, file: any): boolean {
+	},
+  hasNearbyLogging(node: ts.Node, file: any): boolean {
 		// Simple heuristic: check if there's a logging call within 5 lines
 		const nodeLineNumber = this.getLineNumber(file.ast, node);
 		const loggingCalls = this.findLoggingCalls(file);
@@ -391,9 +377,8 @@ private checkFoxCorpLoggingRequirements(tool: any, file: any, context: AnalysisC
 		return loggingCalls.some(call =>
 			Math.abs(call.line - nodeLineNumber) <= 5
 		);
-	}
-
- private checkGlobalAuditConfig(context: AnalysisContext): RuleViolation[] {
+	},
+  checkGlobalAuditConfig(context: AnalysisContext): RuleViolation[] {
 		const violations: RuleViolation[] = [];
 
 		// Check for audit configuration file
@@ -429,9 +414,9 @@ private checkFoxCorpLoggingRequirements(tool: any, file: any, context: AnalysisC
 		}
 
 		return violations;
-	}
-
- private getLineNumber(sourceFile: ts.SourceFile, node: ts.Node): number {
+	},
+  getLineNumber(sourceFile: ts.SourceFile, node: ts.Node): number {
 		return sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1;
 	}
-};
+} as MCPSecurityRule;
+
