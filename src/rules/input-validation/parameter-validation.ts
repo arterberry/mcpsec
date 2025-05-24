@@ -1,7 +1,7 @@
 import { MCPSecurityRule, AnalysisContext, RuleViolation } from '../../core/types';
 import * as ts from 'typescript';
 
-export const parameterValidation: MCPSecurityRule = {
+export const parameterValidation = {
     id: 'parameter-validation',
     name: 'Parameter Validation',
     description: 'Ensures all tool parameters are properly validated according to their schemas',
@@ -23,9 +23,8 @@ export const parameterValidation: MCPSecurityRule = {
         violations.push(...schemaViolations);
 
         return violations;
-    }
-
-  private async checkToolParameterValidation(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
+    },
+  async checkToolParameterValidation(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
         const violations: RuleViolation[] = [];
 
         // Check if tool has input schema
@@ -49,9 +48,8 @@ export const parameterValidation: MCPSecurityRule = {
         violations.push(...implViolations);
 
         return violations;
-    }
-
-  private validateSchemaStructure(tool: any, context: AnalysisContext): RuleViolation[] {
+    },
+  validateSchemaStructure(tool: any, context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
         const schema = tool.inputSchema;
 
@@ -91,9 +89,8 @@ export const parameterValidation: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
-  private validatePropertySchema(toolName: string, propName: string, propSchema: any): RuleViolation[] {
+    },
+  validatePropertySchema(toolName: string, propName: string, propSchema: any): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Check for missing type
@@ -132,9 +129,8 @@ export const parameterValidation: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
-  private validateStringSchema(toolName: string, propName: string, propSchema: any): RuleViolation[] {
+    },
+  validateStringSchema(toolName: string, propName: string, propSchema: any): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Check for length constraints
@@ -186,9 +182,8 @@ export const parameterValidation: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private validateNumberSchema(toolName: string, propName: string, propSchema: any): RuleViolation[] {
+    },
+  validateNumberSchema(toolName: string, propName: string, propSchema: any): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Check for range constraints
@@ -225,9 +220,8 @@ export const parameterValidation: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private validateArraySchema(toolName: string, propName: string, propSchema: any): RuleViolation[] {
+    },
+  validateArraySchema(toolName: string, propName: string, propSchema: any): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Check for items schema
@@ -264,9 +258,8 @@ export const parameterValidation: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private validateObjectSchema(toolName: string, propName: string, propSchema: any): RuleViolation[] {
+    },
+  validateObjectSchema(toolName: string, propName: string, propSchema: any): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Check for properties definition
@@ -303,9 +296,8 @@ export const parameterValidation: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private isDangerousEnumValue(value: string): boolean {
+    },
+  isDangerousEnumValue(value: string): boolean {
         const dangerousPatterns = [
             /\.\./,           // Path traversal
             /script/i,        // Script injection
@@ -318,9 +310,8 @@ export const parameterValidation: MCPSecurityRule = {
         ];
 
         return dangerousPatterns.some(pattern => pattern.test(value));
-    }
-
- private isSensitiveField(fieldName: string): boolean {
+    },
+  isSensitiveField(fieldName: string): boolean {
         const sensitivePatterns = [
             /password/i,
             /secret/i,
@@ -335,9 +326,8 @@ export const parameterValidation: MCPSecurityRule = {
         ];
 
         return sensitivePatterns.some(pattern => pattern.test(fieldName));
-    }
-
- private needsFormatValidation(fieldName: string): boolean {
+    },
+  needsFormatValidation(fieldName: string): boolean {
         const formatFields = [
             { pattern: /email/i, format: 'email' },
             { pattern: /url|uri/i, format: 'uri' },
@@ -348,9 +338,8 @@ export const parameterValidation: MCPSecurityRule = {
         ];
 
         return formatFields.some(field => field.pattern.test(fieldName));
-    }
-
- private shouldBePositive(fieldName: string): boolean {
+    },
+  shouldBePositive(fieldName: string): boolean {
         const positivePatterns = [
             /count/i,
             /size/i,
@@ -365,9 +354,8 @@ export const parameterValidation: MCPSecurityRule = {
         ];
 
         return positivePatterns.some(pattern => pattern.test(fieldName));
-    }
-
- private validateFoxCorpSchema(tool: any, context: AnalysisContext): RuleViolation[] {
+    },
+  validateFoxCorpSchema(tool: any, context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
         const schema = tool.inputSchema;
 
@@ -390,9 +378,8 @@ export const parameterValidation: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private isStreamingTool(tool: any): boolean {
+    },
+  isStreamingTool(tool: any): boolean {
         const streamingPatterns = [
             /stream/i,
             /video/i,
@@ -404,9 +391,8 @@ export const parameterValidation: MCPSecurityRule = {
         return streamingPatterns.some(pattern =>
             pattern.test(tool.name) || pattern.test(tool.description || '')
         );
-    }
-
- private isConvivaTool(tool: any): boolean {
+    },
+  isConvivaTool(tool: any): boolean {
         const convivaPatterns = [
             /conviva/i,
             /analytics/i,
@@ -417,9 +403,8 @@ export const parameterValidation: MCPSecurityRule = {
         return convivaPatterns.some(pattern =>
             pattern.test(tool.name) || pattern.test(tool.description || '')
         );
-    }
-
- private isHARTool(tool: any): boolean {
+    },
+  isHARTool(tool: any): boolean {
         const harPatterns = [
             /har/i,
             /http.*archive/i,
@@ -429,9 +414,8 @@ export const parameterValidation: MCPSecurityRule = {
         return harPatterns.some(pattern =>
             pattern.test(tool.name) || pattern.test(tool.description || '')
         );
-    }
-
- private validateStreamingParameters(tool: any, schema: any): RuleViolation[] {
+    },
+  validateStreamingParameters(tool: any, schema: any): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Check for stream ID validation
@@ -468,26 +452,22 @@ export const parameterValidation: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private hasStreamIdValidation(streamIdSchema: any): boolean {
+    },
+  hasStreamIdValidation(streamIdSchema: any): boolean {
         return streamIdSchema.pattern &&
             (streamIdSchema.pattern.includes('fox') || streamIdSchema.pattern.includes('[a-zA-Z0-9-]+'));
-    }
-
- private hasContentTypeValidation(contentTypeSchema: any): boolean {
+    },
+  hasContentTypeValidation(contentTypeSchema: any): boolean {
         return contentTypeSchema.enum &&
             contentTypeSchema.enum.some((type: string) =>
                 ['live', 'vod', 'sports', 'news'].includes(type.toLowerCase())
             );
-    }
-
- private hasAssetUrlValidation(assetUrlSchema: any): boolean {
+    },
+  hasAssetUrlValidation(assetUrlSchema: any): boolean {
         return assetUrlSchema.pattern &&
             (assetUrlSchema.pattern.includes('fox') || assetUrlSchema.pattern.includes('\.fox\.'));
-    }
-
- private validateConvivaParameters(tool: any, schema: any): RuleViolation[] {
+    },
+  validateConvivaParameters(tool: any, schema: any): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Check for session ID validation
@@ -513,17 +493,14 @@ export const parameterValidation: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private hasSessionIdValidation(sessionIdSchema: any): boolean {
+    },
+  hasSessionIdValidation(sessionIdSchema: any): boolean {
         return sessionIdSchema.pattern && sessionIdSchema.pattern.length > 10;
-    }
-
- private hasMetricNameValidation(metricNameSchema: any): boolean {
+    },
+  hasMetricNameValidation(metricNameSchema: any): boolean {
         return metricNameSchema.enum && metricNameSchema.enum.length > 0;
-    }
-
- private validateHARParameters(tool: any, schema: any): RuleViolation[] {
+    },
+  validateHARParameters(tool: any, schema: any): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Check for HAR file size limits
@@ -549,17 +526,14 @@ export const parameterValidation: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private hasHARSizeValidation(harSchema: any): boolean {
+    },
+  hasHARSizeValidation(harSchema: any): boolean {
         return harSchema.maxLength && harSchema.maxLength <= 10000000; // 10MB limit
-    }
-
- private hasHARFormatValidation(harSchema: any): boolean {
+    },
+  hasHARFormatValidation(harSchema: any): boolean {
         return harSchema.type === 'object' && harSchema.properties;
-    }
-
- private async checkValidationImplementation(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
+    },
+  async checkValidationImplementation(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
         const violations: RuleViolation[] = [];
 
         // Find tool implementation
@@ -614,9 +588,8 @@ export const parameterValidation: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private hasValidationLibraryUsage(file: any): boolean {
+    },
+  hasValidationLibraryUsage(file: any): boolean {
         const content = file.content.toLowerCase();
         const validationLibraries = [
             /joi\./,
@@ -629,9 +602,8 @@ export const parameterValidation: MCPSecurityRule = {
         ];
 
         return validationLibraries.some(lib => lib.test(content));
-    }
-
- private hasSchemaValidation(file: any): boolean {
+    },
+  hasSchemaValidation(file: any): boolean {
         const content = file.content.toLowerCase();
         const validationPatterns = [
             /validate.*schema/,
@@ -645,9 +617,8 @@ export const parameterValidation: MCPSecurityRule = {
         ];
 
         return validationPatterns.some(pattern => pattern.test(content));
-    }
-
- private hasValidationErrorHandling(file: any): boolean {
+    },
+  hasValidationErrorHandling(file: any): boolean {
         const content = file.content.toLowerCase();
         const errorPatterns = [
             /validation.*error/,
@@ -659,9 +630,8 @@ export const parameterValidation: MCPSecurityRule = {
         ];
 
         return errorPatterns.some(pattern => pattern.test(content));
-    }
-
- private checkValidationSchemas(context: AnalysisContext): RuleViolation[] {
+    },
+  checkValidationSchemas(context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Check for consistent schema usage across tools
@@ -716,9 +686,8 @@ export const parameterValidation: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private findDuplicateSchemas(schemas: any[]): any[] {
+    },
+  findDuplicateSchemas(schemas: any[]): any[] {
         const schemaStrings = schemas.map(schema => JSON.stringify(schema));
         const duplicates: any[] = [];
         const seen = new Set();
@@ -732,9 +701,8 @@ export const parameterValidation: MCPSecurityRule = {
         }
 
         return duplicates;
-    }
-
- private getLineNumber(sourceFile: ts.SourceFile, node: ts.Node): number {
+    },
+  getLineNumber(sourceFile: ts.SourceFile, node: ts.Node): number {
         return sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1;
     }
-};
+} as MCPSecurityRule;

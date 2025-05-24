@@ -1,7 +1,7 @@
 import { MCPSecurityRule, AnalysisContext, RuleViolation } from '../../core/types';
 import * as ts from 'typescript';
 
-export const rateLimitEnforcement: MCPSecurityRule = {
+export const rateLimitEnforcement = {
     id: 'rate-limit-enforcement',
     name: 'Rate Limit Enforcement',
     description: 'Ensures MCP tools have proper rate limiting to prevent abuse and resource exhaustion',
@@ -27,9 +27,8 @@ export const rateLimitEnforcement: MCPSecurityRule = {
         violations.push(...criticalViolations);
 
         return violations;
-    }
-
-  private async checkToolRateLimit(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
+    },
+  async checkToolRateLimit(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
         const violations: RuleViolation[] = [];
 
         // Check if tool has explicit rate limit configuration
@@ -53,9 +52,8 @@ export const rateLimitEnforcement: MCPSecurityRule = {
         violations.push(...implViolations);
 
         return violations;
-    }
-
-  private validateRateLimitConfig(tool: any, context: AnalysisContext): RuleViolation[] {
+    },
+  validateRateLimitConfig(tool: any, context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
         const rateLimit = tool.rateLimit;
 
@@ -105,9 +103,8 @@ export const rateLimitEnforcement: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
-  private async checkRateLimitImplementation(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
+    },
+  async checkRateLimitImplementation(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
         const violations: RuleViolation[] = [];
 
         // Find tool implementation file
@@ -149,9 +146,8 @@ export const rateLimitEnforcement: MCPSecurityRule = {
         violations.push(...bypassViolations);
 
         return violations;
-    }
-
-  private checkForRateLimitingCode(file: any): boolean {
+    },
+  checkForRateLimitingCode(file: any): boolean {
         const content = file.content.toLowerCase();
         const rateLimitPatterns = [
             /rate.*limit/,
@@ -164,9 +160,8 @@ export const rateLimitEnforcement: MCPSecurityRule = {
         ];
 
         return rateLimitPatterns.some(pattern => pattern.test(content));
-    }
-
-  private checkForRateLimitErrorHandling(file: any): boolean {
+    },
+  checkForRateLimitErrorHandling(file: any): boolean {
         const content = file.content.toLowerCase();
         const errorPatterns = [
             /429/,  // Too Many Requests status code
@@ -177,9 +172,8 @@ export const rateLimitEnforcement: MCPSecurityRule = {
         ];
 
         return errorPatterns.some(pattern => pattern.test(content));
-    }
-
-  private checkRateLimitBypass(file: any): RuleViolation[] {
+    },
+  checkRateLimitBypass(file: any): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         if (!file.ast) return violations;
@@ -221,9 +215,8 @@ export const rateLimitEnforcement: MCPSecurityRule = {
 
         visitor(file.ast);
         return violations;
-    }
-
-  private isPrivilegedBypass(condition: string): boolean {
+    },
+  isPrivilegedBypass(condition: string): boolean {
         const privilegedPatterns = [
             /admin/i,
             /root/i,
@@ -233,9 +226,8 @@ export const rateLimitEnforcement: MCPSecurityRule = {
         ];
 
         return privilegedPatterns.some(pattern => pattern.test(condition));
-    }
-
-  private isIPBasedBypass(condition: string): boolean {
+    },
+  isIPBasedBypass(condition: string): boolean {
         const ipPatterns = [
             /ip.*===.*['"]/,
             /whitelist.*ip/i,
@@ -244,9 +236,8 @@ export const rateLimitEnforcement: MCPSecurityRule = {
         ];
 
         return ipPatterns.some(pattern => pattern.test(condition));
-    }
-
-  private checkGlobalRateLimit(context: AnalysisContext): RuleViolation[] {
+    },
+  checkGlobalRateLimit(context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Check for global rate limiting middleware
@@ -288,9 +279,8 @@ export const rateLimitEnforcement: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
-  private checkCriticalToolsRateLimit(context: AnalysisContext): RuleViolation[] {
+    },
+  checkCriticalToolsRateLimit(context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Tools that MUST have rate limiting
@@ -311,9 +301,8 @@ export const rateLimitEnforcement: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
-  private isHighRiskTool(tool: any): boolean {
+    },
+  isHighRiskTool(tool: any): boolean {
         const highRiskPatterns = [
             /admin/i,
             /system/i,
@@ -329,9 +318,8 @@ export const rateLimitEnforcement: MCPSecurityRule = {
         return highRiskPatterns.some(pattern =>
             pattern.test(tool.name) || pattern.test(tool.description || '')
         );
-    }
-
-  private isStreamingTool(tool: any): boolean {
+    },
+  isStreamingTool(tool: any): boolean {
         const streamingPatterns = [
             /stream/i,
             /video/i,
@@ -345,21 +333,18 @@ export const rateLimitEnforcement: MCPSecurityRule = {
         return streamingPatterns.some(pattern =>
             pattern.test(tool.name) || pattern.test(tool.description || '')
         );
-    }
-
-  private getToolRiskLevel(tool: any): string {
+    },
+  getToolRiskLevel(tool: any): string {
         if (this.isHighRiskTool(tool)) return 'HIGH_RISK';
         if (this.isStreamingTool(tool)) return 'STREAMING';
         return 'STANDARD';
-    }
-
-  private getToolCategory(tool: any): string {
+    },
+  getToolCategory(tool: any): string {
         if (this.isStreamingTool(tool)) return 'Streaming/Media';
         if (this.isHighRiskTool(tool)) return 'System/Admin';
         return 'General';
-    }
-
-  private getLineNumber(sourceFile: ts.SourceFile, node: ts.Node): number {
+    },
+  getLineNumber(sourceFile: ts.SourceFile, node: ts.Node): number {
         return sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1;
     }
-};
+} as MCPSecurityRule;

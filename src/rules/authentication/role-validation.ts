@@ -1,7 +1,7 @@
 import { MCPSecurityRule, AnalysisContext, RuleViolation } from '../../core/types';
 import * as ts from 'typescript';
 
-export const roleValidation: MCPSecurityRule = {
+export const roleValidation = {
     id: 'role-validation',
     name: 'Role-Based Access Validation',
     description: 'Ensures proper role-based access control implementation in MCP tools',
@@ -33,9 +33,8 @@ export const roleValidation: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
-  private checkRoleSystem(context: AnalysisContext): RuleViolation[] {
+    },
+  checkRoleSystem(context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Check for role definition
@@ -81,9 +80,8 @@ export const roleValidation: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
-  private hasRoleDefinitions(file: any): boolean {
+    },
+  hasRoleDefinitions(file: any): boolean {
         const content = file.content.toLowerCase();
         const rolePatterns = [
             /role.*=.*{/,
@@ -96,9 +94,8 @@ export const roleValidation: MCPSecurityRule = {
         ];
 
         return rolePatterns.some(pattern => pattern.test(content));
-    }
-
-  private hasRoleAssignment(file: any): boolean {
+    },
+  hasRoleAssignment(file: any): boolean {
         const content = file.content.toLowerCase();
         const assignmentPatterns = [
             /assign.*role/,
@@ -110,9 +107,8 @@ export const roleValidation: MCPSecurityRule = {
         ];
 
         return assignmentPatterns.some(pattern => pattern.test(content));
-    }
-
-  private hasRoleHierarchy(file: any): boolean {
+    },
+  hasRoleHierarchy(file: any): boolean {
         const content = file.content.toLowerCase();
         const hierarchyPatterns = [
             /role.*inherit/,
@@ -124,9 +120,8 @@ export const roleValidation: MCPSecurityRule = {
         ];
 
         return hierarchyPatterns.some(pattern => pattern.test(content));
-    }
-
-  private async checkToolRoleValidation(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
+    },
+  async checkToolRoleValidation(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
         const violations: RuleViolation[] = [];
 
         // Check if tool defines required roles
@@ -150,14 +145,12 @@ export const roleValidation: MCPSecurityRule = {
         violations.push(...implViolations);
 
         return violations;
-    }
-
-  private hasRequiredRoles(tool: any): boolean {
+    },
+  hasRequiredRoles(tool: any): boolean {
         return tool.roles &&
             (Array.isArray(tool.roles) ? tool.roles.length > 0 : typeof tool.roles === 'string');
-    }
-
-  private isHighPrivilegeTool(tool: any): boolean {
+    },
+  isHighPrivilegeTool(tool: any): boolean {
         const highPrivilegePatterns = [
             /admin/i,
             /system/i,
@@ -174,9 +167,8 @@ export const roleValidation: MCPSecurityRule = {
         return highPrivilegePatterns.some(pattern =>
             pattern.test(tool.name) || pattern.test(tool.description || '')
         );
-    }
-
-  private validateToolRoles(tool: any, context: AnalysisContext): RuleViolation[] {
+    },
+  validateToolRoles(tool: any, context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
         const roles = Array.isArray(tool.roles) ? tool.roles : [tool.roles];
 
@@ -216,15 +208,13 @@ export const roleValidation: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
-  private isValidRoleName(role: string): boolean {
+    },
+  isValidRoleName(role: string): boolean {
         // Standard role naming: lowercase, underscores, no spaces
         const rolePattern = /^[a-z][a-z0-9_]*$/;
         return rolePattern.test(role);
-    }
-
-  private isOverlyBroadRole(role: string): boolean {
+    },
+  isOverlyBroadRole(role: string): boolean {
         const broadRoles = [
             'admin',
             'administrator',
@@ -237,9 +227,8 @@ export const roleValidation: MCPSecurityRule = {
         ];
 
         return broadRoles.includes(role.toLowerCase());
-    }
-
-  private isFoxCorpCompliantRole(role: string): boolean {
+    },
+  isFoxCorpCompliantRole(role: string): boolean {
         const foxCorpStandardRoles = [
             'viewer',
             'editor',
@@ -254,9 +243,8 @@ export const roleValidation: MCPSecurityRule = {
         return foxCorpStandardRoles.includes(role.toLowerCase()) ||
             role.startsWith('fox_') ||
             role.startsWith('content_');
-    }
-
-  private async checkRoleImplementation(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
+    },
+  async checkRoleImplementation(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
         const violations: RuleViolation[] = [];
 
         // Find tool implementation
@@ -303,9 +291,8 @@ export const roleValidation: MCPSecurityRule = {
         violations.push(...escalationViolations);
 
         return violations;
-    }
-
-  private hasRoleValidationCode(file: any): boolean {
+    },
+  hasRoleValidationCode(file: any): boolean {
         const content = file.content.toLowerCase();
         const roleValidationPatterns = [
             /check.*role/,
@@ -319,9 +306,8 @@ export const roleValidation: MCPSecurityRule = {
         ];
 
         return roleValidationPatterns.some(pattern => pattern.test(content));
-    }
-
-  private hasRoleErrorHandling(file: any): boolean {
+    },
+  hasRoleErrorHandling(file: any): boolean {
         const content = file.content.toLowerCase();
         const errorPatterns = [
             /role.*error/,
@@ -334,9 +320,8 @@ export const roleValidation: MCPSecurityRule = {
         ];
 
         return errorPatterns.some(pattern => pattern.test(content));
-    }
-
-  private checkRoleEscalation(file: any, tool: any): RuleViolation[] {
+    },
+  checkRoleEscalation(file: any, tool: any): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         if (!file.ast) return violations;
@@ -393,9 +378,8 @@ export const roleValidation: MCPSecurityRule = {
 
         visitor(file.ast);
         return violations;
-    }
-
-  private isRoleModification(callText: string): boolean {
+    },
+  isRoleModification(callText: string): boolean {
         const modificationPatterns = [
             /add.*role/i,
             /remove.*role/i,
@@ -408,9 +392,8 @@ export const roleValidation: MCPSecurityRule = {
         ];
 
         return modificationPatterns.some(pattern => pattern.test(callText));
-    }
-
-  private isRoleBypass(callText: string): boolean {
+    },
+  isRoleBypass(callText: string): boolean {
         const bypassPatterns = [
             /skip.*role/i,
             /bypass.*role/i,
@@ -420,9 +403,8 @@ export const roleValidation: MCPSecurityRule = {
         ];
 
         return bypassPatterns.some(pattern => pattern.test(callText));
-    }
-
-  private isRoleBypassCondition(condition: string): boolean {
+    },
+  isRoleBypassCondition(condition: string): boolean {
         const bypassPatterns = [
             /!.*role/i,
             /role.*===.*null/i,
@@ -433,9 +415,8 @@ export const roleValidation: MCPSecurityRule = {
         ];
 
         return bypassPatterns.some(pattern => pattern.test(condition));
-    }
-
-  private checkRoleBasedResourceAccess(context: AnalysisContext): RuleViolation[] {
+    },
+  checkRoleBasedResourceAccess(context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Check if resources use role-based access
@@ -452,15 +433,13 @@ export const roleValidation: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
-  private hasRoleBasedAccess(resource: any): boolean {
+    },
+  hasRoleBasedAccess(resource: any): boolean {
         return resource.roles ||
             resource.accessControl?.roles ||
             resource.permissions?.some((perm: string) => perm.includes('role'));
-    }
-
-  private checkFoxCorpRoles(context: AnalysisContext): RuleViolation[] {
+    },
+  checkFoxCorpRoles(context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Check for Fox Corp specific role requirements
@@ -498,9 +477,8 @@ export const roleValidation: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
-  private isStreamingTool(tool: any): boolean {
+    },
+  isStreamingTool(tool: any): boolean {
         const streamingPatterns = [
             /stream/i,
             /video/i,
@@ -513,9 +491,8 @@ export const roleValidation: MCPSecurityRule = {
         return streamingPatterns.some(pattern =>
             pattern.test(tool.name) || pattern.test(tool.description || '')
         );
-    }
-
-  private hasStreamingRoles(tool: any): boolean {
+    },
+  hasStreamingRoles(tool: any): boolean {
         const streamingRoles = [
             'stream_operator',
             'content_manager',
@@ -525,9 +502,8 @@ export const roleValidation: MCPSecurityRule = {
 
         const toolRoles = Array.isArray(tool.roles) ? tool.roles : [tool.roles];
         return streamingRoles.some(role => toolRoles.includes(role));
-    }
-
- private isAdminTool(tool: any): boolean {
+    },
+  isAdminTool(tool: any): boolean {
         const adminPatterns = [
             /admin/i,
             /manage/i,
@@ -540,9 +516,8 @@ export const roleValidation: MCPSecurityRule = {
         return adminPatterns.some(pattern =>
             pattern.test(tool.name) || pattern.test(tool.description || '')
         );
-    }
-
- private hasOperationalRoles(tool: any): boolean {
+    },
+  hasOperationalRoles(tool: any): boolean {
         const operationalRoles = [
             'viewer',
             'editor',
@@ -553,9 +528,8 @@ export const roleValidation: MCPSecurityRule = {
 
         const toolRoles = Array.isArray(tool.roles) ? tool.roles : [tool.roles];
         return operationalRoles.some(role => toolRoles.includes(role));
-    }
-
- private getLineNumber(sourceFile: ts.SourceFile, node: ts.Node): number {
+    },
+  getLineNumber(sourceFile: ts.SourceFile, node: ts.Node): number {
         return sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1;
     }
-};
+} as MCPSecurityRule;

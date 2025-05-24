@@ -1,7 +1,7 @@
 import { MCPSecurityRule, AnalysisContext, RuleViolation } from '../../core/types';
 import * as ts from 'typescript';
 
-export const injectionDetection: MCPSecurityRule = {
+export const injectionDetection = {
   id: 'injection-detection',
   name: 'Injection Attack Detection',
   description: 'Detects potential injection vulnerabilities in MCP tool implementations',
@@ -20,9 +20,8 @@ export const injectionDetection: MCPSecurityRule = {
     }
 
     return violations;
-  }
-
-  private analyzeFileForInjections(file: any, context: AnalysisContext): RuleViolation[] {
+  },
+  analyzeFileForInjections(file: any, context: AnalysisContext): RuleViolation[] {
     const violations: RuleViolation[] = [];
     
     const visitor = (node: ts.Node) => {
@@ -43,9 +42,8 @@ export const injectionDetection: MCPSecurityRule = {
 
     visitor(file.ast);
     return violations;
-  }
-
-  private checkSQLInjection(node: ts.CallExpression, file: any, violations: RuleViolation[]) {
+  },
+  checkSQLInjection(node: ts.CallExpression, file: any, violations: RuleViolation[]) {
     const expression = node.expression;
     
     if (ts.isPropertyAccessExpression(expression) && 
@@ -69,9 +67,8 @@ export const injectionDetection: MCPSecurityRule = {
         }
       }
     }
-  }
-
-  private checkCommandInjection(node: ts.CallExpression, file: any, violations: RuleViolation[]) {
+  },
+  checkCommandInjection(node: ts.CallExpression, file: any, violations: RuleViolation[]) {
     const expression = node.expression;
     
     if (ts.isIdentifier(expression) && 
@@ -90,9 +87,8 @@ export const injectionDetection: MCPSecurityRule = {
         });
       }
     }
-  }
-
-  private checkEvalInjection(node: ts.CallExpression, file: any, violations: RuleViolation[]) {
+  },
+  checkEvalInjection(node: ts.CallExpression, file: any, violations: RuleViolation[]) {
     const expression = node.expression;
     
     if (ts.isIdentifier(expression) && 
@@ -108,9 +104,8 @@ export const injectionDetection: MCPSecurityRule = {
         fix: 'Avoid eval-like functions or use safer alternatives'
       });
     }
-  }
-
-  private checkTemplateLiteralInjection(node: ts.TemplateExpression, file: any, violations: RuleViolation[]) {
+  },
+  checkTemplateLiteralInjection(node: ts.TemplateExpression, file: any, violations: RuleViolation[]) {
     // Check if template literal contains SQL-like or command-like patterns
     const spans = node.templateSpans;
     
@@ -131,9 +126,8 @@ export const injectionDetection: MCPSecurityRule = {
         }
       }
     }
-  }
-
-  private containsUnsanitizedInput(node: ts.Node, file: any): boolean {
+  },
+  containsUnsanitizedInput(node: ts.Node, file: any): boolean {
     // Simple heuristic: check if the node references user input without sanitization
     const text = node.getText(file.ast);
     
@@ -157,13 +151,11 @@ export const injectionDetection: MCPSecurityRule = {
     const hasSanitization = sanitizationPatterns.some(pattern => pattern.test(text));
 
     return hasUserInput && !hasSanitization;
-  }
-
-  private getTemplateContext(node: ts.TemplateExpression, file: any): string {
+  },
+  getTemplateContext(node: ts.TemplateExpression, file: any): string {
     return node.getText(file.ast);
-  }
-
-  private looksLikeSQLOrCommand(template: string): boolean {
+  },
+  looksLikeSQLOrCommand(template: string): boolean {
     const sqlPatterns = [
       /SELECT\s+.*\s+FROM/i,
       /INSERT\s+INTO/i,
@@ -180,9 +172,8 @@ export const injectionDetection: MCPSecurityRule = {
     ];
 
     return [...sqlPatterns, ...commandPatterns].some(pattern => pattern.test(template));
-  }
-
-  private getLineNumber(sourceFile: ts.SourceFile, node: ts.Node): number {
+  },
+  getLineNumber(sourceFile: ts.SourceFile, node: ts.Node): number {
     return sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1;
   }
-};
+} as MCPSecurityRule;

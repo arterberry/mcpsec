@@ -1,7 +1,7 @@
 import { MCPSecurityRule, AnalysisContext, RuleViolation } from '../../core/types';
 import * as ts from 'typescript';
 
-export const authRequired: MCPSecurityRule = {
+export const authRequired = {
     id: 'auth-required',
     name: 'Authentication Required',
     description: 'Ensures all MCP tools require proper authentication before execution',
@@ -27,9 +27,8 @@ export const authRequired: MCPSecurityRule = {
         violations.push(...implViolations);
 
         return violations;
-    }
-
-  private async checkToolAuthentication(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
+    },
+  async checkToolAuthentication(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
         const violations: RuleViolation[] = [];
 
         // Check if tool explicitly requires authentication
@@ -54,15 +53,13 @@ export const authRequired: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
-  private hasAuthenticationRequirement(tool: any): boolean {
+    },
+  hasAuthenticationRequirement(tool: any): boolean {
         return tool.authRequired === true ||
             tool.authentication === 'required' ||
             (tool.permissions && tool.permissions.length > 0);
-    }
-
-  private async checkToolAuthImplementation(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
+    },
+  async checkToolAuthImplementation(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
         const violations: RuleViolation[] = [];
 
         // Find tool implementation file
@@ -118,9 +115,8 @@ export const authRequired: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
-  private hasAuthenticationCheck(file: any): boolean {
+    },
+  hasAuthenticationCheck(file: any): boolean {
         const content = file.content.toLowerCase();
         const authPatterns = [
             /authenticate/,
@@ -135,9 +131,8 @@ export const authRequired: MCPSecurityRule = {
         ];
 
         return authPatterns.some(pattern => pattern.test(content));
-    }
-
-  private hasTokenValidation(file: any): boolean {
+    },
+  hasTokenValidation(file: any): boolean {
         const content = file.content.toLowerCase();
         const tokenPatterns = [
             /jwt\.verify/,
@@ -150,9 +145,8 @@ export const authRequired: MCPSecurityRule = {
         ];
 
         return tokenPatterns.some(pattern => pattern.test(content));
-    }
-
-  private usesTokenAuth(file: any): boolean {
+    },
+  usesTokenAuth(file: any): boolean {
         const content = file.content.toLowerCase();
         const tokenUsagePatterns = [
             /bearer.*token/,
@@ -163,9 +157,8 @@ export const authRequired: MCPSecurityRule = {
         ];
 
         return tokenUsagePatterns.some(pattern => pattern.test(content));
-    }
-
-  private hasSessionValidation(file: any): boolean {
+    },
+  hasSessionValidation(file: any): boolean {
         const content = file.content.toLowerCase();
         const sessionPatterns = [
             /session\.check/,
@@ -176,9 +169,8 @@ export const authRequired: MCPSecurityRule = {
         ];
 
         return sessionPatterns.some(pattern => pattern.test(content));
-    }
-
-  private usesSessionAuth(file: any): boolean {
+    },
+  usesSessionAuth(file: any): boolean {
         const content = file.content.toLowerCase();
         const sessionUsagePatterns = [
             /req\.session/,
@@ -188,9 +180,8 @@ export const authRequired: MCPSecurityRule = {
         ];
 
         return sessionUsagePatterns.some(pattern => pattern.test(content));
-    }
-
-  private isHighRiskTool(tool: any): boolean {
+    },
+  isHighRiskTool(tool: any): boolean {
         const highRiskPatterns = [
             /admin/i,
             /system/i,
@@ -209,9 +200,8 @@ export const authRequired: MCPSecurityRule = {
         return highRiskPatterns.some(pattern =>
             pattern.test(tool.name) || pattern.test(tool.description || '')
         );
-    }
-
-  private checkHighRiskToolAuth(tool: any, context: AnalysisContext): RuleViolation[] {
+    },
+  checkHighRiskToolAuth(tool: any, context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // High-risk tools should require strong authentication
@@ -237,30 +227,26 @@ export const authRequired: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
-  private hasStrongAuthentication(tool: any): boolean {
+    },
+  hasStrongAuthentication(tool: any): boolean {
         return tool.authentication === 'mfa' ||
             tool.authentication === 'certificate' ||
             tool.strongAuth === true;
-    }
-
-  private hasAdditionalAuthorization(tool: any): boolean {
+    },
+  hasAdditionalAuthorization(tool: any): boolean {
         return (tool.permissions && tool.permissions.length > 0) ||
             tool.roles ||
             tool.authorization;
-    }
-
-  private getToolCategory(tool: any): string {
+    },
+  getToolCategory(tool: any): string {
         if (tool.name.toLowerCase().includes('admin')) return 'Administrative';
         if (tool.name.toLowerCase().includes('system')) return 'System';
         if (tool.name.toLowerCase().includes('stream')) return 'Streaming';
         if (tool.name.toLowerCase().includes('file')) return 'File System';
         if (tool.name.toLowerCase().includes('database')) return 'Database';
         return 'General';
-    }
-
-  private checkGlobalAuthentication(context: AnalysisContext): RuleViolation[] {
+    },
+  checkGlobalAuthentication(context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Check for authentication middleware
@@ -318,9 +304,8 @@ export const authRequired: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private isAuthenticationMiddleware(file: any): boolean {
+    },
+  isAuthenticationMiddleware(file: any): boolean {
         const content = file.content.toLowerCase();
         const middlewarePatterns = [
             /auth.*middleware/,
@@ -333,9 +318,8 @@ export const authRequired: MCPSecurityRule = {
 
         return middlewarePatterns.some(pattern => pattern.test(content)) &&
             (content.includes('function') || content.includes('=>'));
-    }
-
- private hasAuthenticationConfig(file: any): boolean {
+    },
+  hasAuthenticationConfig(file: any): boolean {
         const content = file.content.toLowerCase();
         const configPatterns = [
             /auth.*config/,
@@ -346,9 +330,8 @@ export const authRequired: MCPSecurityRule = {
         ];
 
         return configPatterns.some(pattern => pattern.test(content));
-    }
-
- private checkAuthenticationImplementation(context: AnalysisContext): RuleViolation[] {
+    },
+  checkAuthenticationImplementation(context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         for (const file of context.sourceFiles) {
@@ -368,9 +351,8 @@ export const authRequired: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private checkWeakAuthentication(file: any): RuleViolation[] {
+    },
+  checkWeakAuthentication(file: any): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         if (!file.ast) return violations;
@@ -424,9 +406,8 @@ export const authRequired: MCPSecurityRule = {
 
         visitor(file.ast);
         return violations;
-    }
-
- private isPasswordComparison(callText: string): boolean {
+    },
+  isPasswordComparison(callText: string): boolean {
         const passwordPatterns = [
             /password.*===/,
             /password.*==/,
@@ -437,9 +418,8 @@ export const authRequired: MCPSecurityRule = {
         ];
 
         return passwordPatterns.some(pattern => pattern.test(callText));
-    }
-
- private isWeakPasswordCheck(callText: string): boolean {
+    },
+  isWeakPasswordCheck(callText: string): boolean {
         // Check if it's NOT using proper hashing
         const strongHashPatterns = [
             /bcrypt/i,
@@ -449,9 +429,8 @@ export const authRequired: MCPSecurityRule = {
         ];
 
         return !strongHashPatterns.some(pattern => pattern.test(callText));
-    }
-
- private hasHardcodedCredentials(callText: string): boolean {
+    },
+  hasHardcodedCredentials(callText: string): boolean {
         const credentialPatterns = [
             /password.*=.*["'][^"']{8,}["']/,
             /secret.*=.*["'][^"']{16,}["']/,
@@ -460,9 +439,8 @@ export const authRequired: MCPSecurityRule = {
         ];
 
         return credentialPatterns.some(pattern => pattern.test(callText));
-    }
-
- private hasWeakJWTSecret(callText: string): boolean {
+    },
+  hasWeakJWTSecret(callText: string): boolean {
         if (!callText.toLowerCase().includes('jwt')) return false;
 
         const weakSecretPatterns = [
@@ -475,9 +453,8 @@ export const authRequired: MCPSecurityRule = {
         ];
 
         return weakSecretPatterns.some(pattern => pattern.test(callText));
-    }
-
- private checkAuthenticationBypass(file: any): RuleViolation[] {
+    },
+  checkAuthenticationBypass(file: any): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         if (!file.ast) return violations;
@@ -524,9 +501,8 @@ export const authRequired: MCPSecurityRule = {
 
         visitor(file.ast);
         return violations;
-    }
-
- private isAuthBypassCondition(condition: string): boolean {
+    },
+  isAuthBypassCondition(condition: string): boolean {
         const bypassPatterns = [
             /skip.*auth/i,
             /bypass.*auth/i,
@@ -537,9 +513,8 @@ export const authRequired: MCPSecurityRule = {
         ];
 
         return bypassPatterns.some(pattern => pattern.test(condition));
-    }
-
- private isDebugBypass(condition: string): boolean {
+    },
+  isDebugBypass(condition: string): boolean {
         const debugPatterns = [
             /debug.*mode/i,
             /dev.*mode/i,
@@ -550,9 +525,8 @@ export const authRequired: MCPSecurityRule = {
         ];
 
         return debugPatterns.some(pattern => pattern.test(condition));
-    }
-
- private checkCommentedAuth(node: ts.Node, file: any): RuleViolation[] {
+    },
+  checkCommentedAuth(node: ts.Node, file: any): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Get comments in the node range
@@ -576,9 +550,8 @@ export const authRequired: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private isCommentedAuthentication(commentText: string): boolean {
+    },
+  isCommentedAuthentication(commentText: string): boolean {
         const authPatterns = [
             /\/\/.*auth/i,
             /\/\*.*auth.*\*\//i,
@@ -588,9 +561,8 @@ export const authRequired: MCPSecurityRule = {
         ];
 
         return authPatterns.some(pattern => pattern.test(commentText));
-    }
-
- private checkCredentialHandling(file: any): RuleViolation[] {
+    },
+  checkCredentialHandling(file: any): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         if (!file.ast) return violations;
@@ -636,9 +608,8 @@ export const authRequired: MCPSecurityRule = {
 
         visitor(file.ast);
         return violations;
-    }
-
- private isCredentialVariable(nodeText: string): boolean {
+    },
+  isCredentialVariable(nodeText: string): boolean {
         const credentialPatterns = [
             /password/i,
             /secret/i,
@@ -649,9 +620,8 @@ export const authRequired: MCPSecurityRule = {
         ];
 
         return credentialPatterns.some(pattern => pattern.test(nodeText));
-    }
-
- private isInsecureCredentialHandling(nodeText: string): boolean {
+    },
+  isInsecureCredentialHandling(nodeText: string): boolean {
         const insecurePatterns = [
             /=.*["'][^"']+["']/,  // Direct assignment of string literals
             /console\./,          // Console output
@@ -662,9 +632,8 @@ export const authRequired: MCPSecurityRule = {
         ];
 
         return insecurePatterns.some(pattern => pattern.test(nodeText));
-    }
-
- private isLoggingCall(callText: string): boolean {
+    },
+  isLoggingCall(callText: string): boolean {
         const loggingPatterns = [
             /console\./,
             /log\./,
@@ -677,9 +646,8 @@ export const authRequired: MCPSecurityRule = {
         ];
 
         return loggingPatterns.some(pattern => pattern.test(callText));
-    }
-
- private mayLogCredentials(callText: string): boolean {
+    },
+  mayLogCredentials(callText: string): boolean {
         const credentialPatterns = [
             /password/i,
             /secret/i,
@@ -690,13 +658,11 @@ export const authRequired: MCPSecurityRule = {
         ];
 
         return credentialPatterns.some(pattern => pattern.test(callText));
-    }
-
- private getLineNumber(sourceFile: ts.SourceFile, node: ts.Node): number {
+    },
+  getLineNumber(sourceFile: ts.SourceFile, node: ts.Node): number {
         return sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1;
-    }
-
- private getLineFromPosition(content: string, position: number): number {
+    },
+  getLineFromPosition(content: string, position: number): number {
         return content.substring(0, position).split('\n').length;
     }
-};
+} as MCPSecurityRule;

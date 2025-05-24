@@ -1,7 +1,7 @@
 import { MCPSecurityRule, AnalysisContext, RuleViolation } from '../../core/types';
 import * as ts from 'typescript';
 
-export const resourceAccess: MCPSecurityRule = {
+export const resourceAccess = {
     id: 'resource-access',
     name: 'Resource Access Control',
     description: 'Validates proper access controls for MCP resources and sensitive data',
@@ -37,9 +37,8 @@ export const resourceAccess: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
-  private async checkResourceAccess(resource: any, context: AnalysisContext): Promise<RuleViolation[]> {
+    },
+  async checkResourceAccess(resource: any, context: AnalysisContext): Promise<RuleViolation[]> {
         const violations: RuleViolation[] = [];
 
         // Check if resource has access control metadata
@@ -75,9 +74,8 @@ export const resourceAccess: MCPSecurityRule = {
         violations.push(...implViolations);
 
         return violations;
-    }
-
- private isSensitiveResource(resource: any): boolean {
+    },
+  isSensitiveResource(resource: any): boolean {
         const sensitivePatterns = [
             /config/i,
             /secret/i,
@@ -99,17 +97,15 @@ export const resourceAccess: MCPSecurityRule = {
             pattern.test(resource.uri) ||
             pattern.test(resource.type || '')
         );
-    }
-
- private getResourceType(resource: any): string {
+    },
+  getResourceType(resource: any): string {
         if (resource.uri.includes('file://')) return 'file';
         if (resource.uri.includes('http://') || resource.uri.includes('https://')) return 'web';
         if (resource.uri.includes('db://') || resource.uri.includes('database://')) return 'database';
         if (resource.uri.includes('stream://')) return 'streaming';
         return 'unknown';
-    }
-
- private validateResourceURI(resource: any): RuleViolation[] {
+    },
+  validateResourceURI(resource: any): RuleViolation[] {
         const violations: RuleViolation[] = [];
         const uri = resource.uri;
 
@@ -158,9 +154,8 @@ export const resourceAccess: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private isInternalURI(uri: string): boolean {
+    },
+  isInternalURI(uri: string): boolean {
         const internalPatterns = [
             /localhost/i,
             /127\.0\.0\.1/,
@@ -172,15 +167,13 @@ export const resourceAccess: MCPSecurityRule = {
         ];
 
         return internalPatterns.some(pattern => pattern.test(uri));
-    }
-
- private hasProperInternalAccess(resource: any): boolean {
+    },
+  hasProperInternalAccess(resource: any): boolean {
         return resource.accessControl &&
             (resource.accessControl.level === 'restricted' ||
                 resource.accessControl.internal === true);
-    }
-
- private hasPathTraversal(uri: string): boolean {
+    },
+  hasPathTraversal(uri: string): boolean {
         const traversalPatterns = [
             /\.\.\//,
             /\.\.\\/,
@@ -189,9 +182,8 @@ export const resourceAccess: MCPSecurityRule = {
         ];
 
         return traversalPatterns.some(pattern => pattern.test(uri));
-    }
-
- private hasCredentialsInURI(uri: string): boolean {
+    },
+  hasCredentialsInURI(uri: string): boolean {
         const credentialPatterns = [
             /:\/\/[^:@]+:[^@]+@/,  // username:password@
             /api[_-]?key=/i,
@@ -201,9 +193,8 @@ export const resourceAccess: MCPSecurityRule = {
         ];
 
         return credentialPatterns.some(pattern => pattern.test(uri));
-    }
-
- private async checkResourceImplementation(resource: any, context: AnalysisContext): Promise<RuleViolation[]> {
+    },
+  async checkResourceImplementation(resource: any, context: AnalysisContext): Promise<RuleViolation[]> {
         const violations: RuleViolation[] = [];
 
         // Find files that handle this resource
@@ -241,9 +232,8 @@ export const resourceAccess: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private checkFileSystemAccess(context: AnalysisContext): RuleViolation[] {
+    },
+  checkFileSystemAccess(context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         for (const file of context.sourceFiles) {
@@ -267,9 +257,8 @@ export const resourceAccess: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private isFileSystemOperation(callText: string): boolean {
+    },
+  isFileSystemOperation(callText: string): boolean {
         const fsPatterns = [
             /fs\.(read|write|unlink|mkdir|rmdir)/,
             /readFile/,
@@ -281,9 +270,8 @@ export const resourceAccess: MCPSecurityRule = {
         ];
 
         return fsPatterns.some(pattern => pattern.test(callText));
-    }
-
- private analyzeFileSystemCall(node: ts.CallExpression, file: any, callText: string): RuleViolation[] {
+    },
+  analyzeFileSystemCall(node: ts.CallExpression, file: any, callText: string): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Check for path validation
@@ -313,9 +301,8 @@ export const resourceAccess: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private hasPathValidation(callText: string, file: any): boolean {
+    },
+  hasPathValidation(callText: string, file: any): boolean {
         // Look for path validation in surrounding context
         const context = this.getCallContext(callText, file);
         const validationPatterns = [
@@ -328,16 +315,14 @@ export const resourceAccess: MCPSecurityRule = {
         ];
 
         return validationPatterns.some(pattern => pattern.test(context));
-    }
-
- private getCallContext(callText: string, file: any): string {
+    },
+  getCallContext(callText: string, file: any): string {
         const callIndex = file.content.indexOf(callText);
         const start = Math.max(0, callIndex - 200);
         const end = Math.min(file.content.length, callIndex + 200);
         return file.content.substring(start, end);
-    }
-
- private isWriteToSensitiveDirectory(callText: string): boolean {
+    },
+  isWriteToSensitiveDirectory(callText: string): boolean {
         const sensitivePatterns = [
             /\/etc\//,
             /\/root\//,
@@ -348,9 +333,8 @@ export const resourceAccess: MCPSecurityRule = {
         ];
 
         return sensitivePatterns.some(pattern => pattern.test(callText));
-    }
-
- private checkDatabaseAccess(context: AnalysisContext): RuleViolation[] {
+    },
+  checkDatabaseAccess(context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         for (const file of context.sourceFiles) {
@@ -374,9 +358,8 @@ export const resourceAccess: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private isDatabaseOperation(callText: string): boolean {
+    },
+  isDatabaseOperation(callText: string): boolean {
         const dbPatterns = [
             /\.query\(/,
             /\.execute\(/,
@@ -392,9 +375,8 @@ export const resourceAccess: MCPSecurityRule = {
         ];
 
         return dbPatterns.some(pattern => pattern.test(callText));
-    }
-
- private analyzeDatabaseCall(node: ts.CallExpression, file: any, callText: string): RuleViolation[] {
+    },
+  analyzeDatabaseCall(node: ts.CallExpression, file: any, callText: string): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Check for parameterized queries
@@ -424,9 +406,8 @@ export const resourceAccess: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private isRawSQLQuery(callText: string): boolean {
+    },
+  isRawSQLQuery(callText: string): boolean {
         const sqlPatterns = [
             /SELECT.*FROM/i,
             /INSERT.*INTO/i,
@@ -435,9 +416,8 @@ export const resourceAccess: MCPSecurityRule = {
         ];
 
         return sqlPatterns.some(pattern => pattern.test(callText));
-    }
-
- private isParameterized(callText: string): boolean {
+    },
+  isParameterized(callText: string): boolean {
         const paramPatterns = [
             /\$\d+/,  // PostgreSQL style $1, $2
             /\?/,     // MySQL/SQLite style ?
@@ -445,9 +425,8 @@ export const resourceAccess: MCPSecurityRule = {
         ];
 
         return paramPatterns.some(pattern => pattern.test(callText));
-    }
-
- private hasDBAccessControl(callText: string, file: any): boolean {
+    },
+  hasDBAccessControl(callText: string, file: any): boolean {
         const context = this.getCallContext(callText, file);
         const accessPatterns = [
             /check.*permission/i,
@@ -458,9 +437,8 @@ export const resourceAccess: MCPSecurityRule = {
         ];
 
         return accessPatterns.some(pattern => pattern.test(context));
-    }
-
- private checkNetworkAccess(context: AnalysisContext): RuleViolation[] {
+    },
+  checkNetworkAccess(context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         for (const file of context.sourceFiles) {
@@ -484,9 +462,8 @@ export const resourceAccess: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private isNetworkOperation(callText: string): boolean {
+    },
+  isNetworkOperation(callText: string): boolean {
         const networkPatterns = [
             /fetch\(/,
             /axios\./,
@@ -500,9 +477,8 @@ export const resourceAccess: MCPSecurityRule = {
         ];
 
         return networkPatterns.some(pattern => pattern.test(callText));
-    }
-
- private analyzeNetworkCall(node: ts.CallExpression, file: any, callText: string): RuleViolation[] {
+    },
+  analyzeNetworkCall(node: ts.CallExpression, file: any, callText: string): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Check for URL validation
@@ -532,9 +508,8 @@ export const resourceAccess: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private hasURLValidation(callText: string, file: any): boolean {
+    },
+  hasURLValidation(callText: string, file: any): boolean {
         const context = this.getCallContext(callText, file);
         const validationPatterns = [
             /validate.*url/i,
@@ -545,9 +520,8 @@ export const resourceAccess: MCPSecurityRule = {
         ];
 
         return validationPatterns.some(pattern => pattern.test(context));
-    }
-
- private maybeSSRFVulnerable(callText: string): boolean {
+    },
+  maybeSSRFVulnerable(callText: string): boolean {
         // Check if URL comes from user input without validation
         const userInputPatterns = [
             /params\./,
@@ -557,9 +531,8 @@ export const resourceAccess: MCPSecurityRule = {
         ];
 
         return userInputPatterns.some(pattern => pattern.test(callText));
-    }
-
- private checkStreamingResourceAccess(context: AnalysisContext): RuleViolation[] {
+    },
+  checkStreamingResourceAccess(context: AnalysisContext): RuleViolation[] {
         const violations: RuleViolation[] = [];
 
         // Check for streaming-specific resources
@@ -603,9 +576,8 @@ export const resourceAccess: MCPSecurityRule = {
         }
 
         return violations;
-    }
-
- private isStreamingResource(resource: any): boolean {
+    },
+  isStreamingResource(resource: any): boolean {
         const streamingPatterns = [
             /stream/i,
             /video/i,
@@ -622,9 +594,8 @@ export const resourceAccess: MCPSecurityRule = {
             pattern.test(resource.uri) ||
             pattern.test(resource.type || '')
         );
-    }
-
- private hasDRMProtection(resource: any): boolean {
+    },
+  hasDRMProtection(resource: any): boolean {
         const drmPatterns = [
             /drm/i,
             /fairplay/i,
@@ -636,9 +607,8 @@ export const resourceAccess: MCPSecurityRule = {
 
         const resourceText = JSON.stringify(resource).toLowerCase();
         return drmPatterns.some(pattern => pattern.test(resourceText));
-    }
-
- private hasGeoBlocking(resource: any): boolean {
+    },
+  hasGeoBlocking(resource: any): boolean {
         const geoPatterns = [
             /geo/i,
             /region/i,
@@ -650,9 +620,8 @@ export const resourceAccess: MCPSecurityRule = {
 
         const resourceText = JSON.stringify(resource).toLowerCase();
         return geoPatterns.some(pattern => pattern.test(resourceText));
-    }
-
- private hasWatermarking(resource: any): boolean {
+    },
+  hasWatermarking(resource: any): boolean {
         const watermarkPatterns = [
             /watermark/i,
             /forensic/i,
@@ -662,9 +631,8 @@ export const resourceAccess: MCPSecurityRule = {
 
         const resourceText = JSON.stringify(resource).toLowerCase();
         return watermarkPatterns.some(pattern => pattern.test(resourceText));
-    }
-
- private hasAccessControlCheck(file: any): boolean {
+    },
+  hasAccessControlCheck(file: any): boolean {
         const content = file.content.toLowerCase();
         const accessPatterns = [
             /check.*access/i,
@@ -676,9 +644,8 @@ export const resourceAccess: MCPSecurityRule = {
         ];
 
         return accessPatterns.some(pattern => pattern.test(content));
-    }
-
- private hasSecureErrorHandling(file: any): boolean {
+    },
+  hasSecureErrorHandling(file: any): boolean {
         const content = file.content.toLowerCase();
         const secureErrorPatterns = [
             /generic.*error/i,
@@ -698,9 +665,8 @@ export const resourceAccess: MCPSecurityRule = {
         const hasInsecure = insecureErrorPatterns.some(pattern => pattern.test(content));
 
         return hasSecure && !hasInsecure;
-    }
-
- private getLineNumber(sourceFile: ts.SourceFile, node: ts.Node): number {
+    },
+  getLineNumber(sourceFile: ts.SourceFile, node: ts.Node): number {
         return sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1;
     }
-};
+} as MCPSecurityRule;

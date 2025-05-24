@@ -1,7 +1,7 @@
 import { MCPSecurityRule, AnalysisContext, RuleViolation } from '../../core/types';
 import * as ts from 'typescript';
 
-export const foxStreamingProtection: MCPSecurityRule = {
+export const foxStreamingProtection = {
   id: 'fox-streaming-protection',
   name: 'Fox Streaming Asset Protection',
   description: 'Ensures streaming assets and IP are protected with appropriate access controls',
@@ -51,9 +51,8 @@ export const foxStreamingProtection: MCPSecurityRule = {
     }
 
     return violations;
-  }
-
-  private async analyzeStreamingImplementation(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
+  },
+  async analyzeStreamingImplementation(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
     const violations: RuleViolation[] = [];
     
     // Find the implementation file
@@ -103,9 +102,8 @@ export const foxStreamingProtection: MCPSecurityRule = {
 
     visitor(implFile.ast);
     return violations;
-  }
-
-  private isStreamingUrl(url: string): boolean {
+  },
+  isStreamingUrl(url: string): boolean {
     const streamingPatterns = [
       /rtmp:\/\//i,
       /hls:\/\//i,
@@ -117,18 +115,16 @@ export const foxStreamingProtection: MCPSecurityRule = {
     ];
     
     return streamingPatterns.some(pattern => pattern.test(url));
-  }
-
-  private hasProperValidation(content: string, url: string): boolean {
+  },
+  hasProperValidation(content: string, url: string): boolean {
     const context = content.substring(
       Math.max(0, content.indexOf(url) - 200),
       content.indexOf(url) + 200
     );
     
     return /validate|sanitize|allowlist|whitelist/i.test(context);
-  }
-
-  private containsCredentials(value: string): boolean {
+  },
+  containsCredentials(value: string): boolean {
     const credentialPatterns = [
       /api[_-]?key/i,
       /secret/i,
@@ -140,9 +136,8 @@ export const foxStreamingProtection: MCPSecurityRule = {
     return credentialPatterns.some(pattern => pattern.test(value)) && 
            value.length > 10 && 
            /[a-zA-Z0-9]{8,}/.test(value);
-  }
-
-  private getLineNumber(sourceFile: ts.SourceFile, node: ts.Node): number {
+  },
+  getLineNumber(sourceFile: ts.SourceFile, node: ts.Node): number {
     return sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1;
   }
-};
+} as MCPSecurityRule;
