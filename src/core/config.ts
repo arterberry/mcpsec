@@ -1,10 +1,10 @@
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { MCPSecConfig } from './types';
 
 export class ConfigManager {
   private static instance: ConfigManager;
-  private config: MCPSecConfig;
+  private config!: MCPSecConfig;
 
   private constructor() {}
 
@@ -96,5 +96,21 @@ export class ConfigManager {
 
   public getConfig(): MCPSecConfig {
     return this.config;
+  }
+
+  public async initializeConfig(projectPath: string, template: string): Promise<void> {
+    const config = this.loadDefaultConfig();
+    const filePath = join(projectPath, '.mcpsec.json');
+    const output = JSON.stringify(config, null, 2);
+    writeFileSync(filePath, output, 'utf-8');
+  }
+
+  public async validateConfig(configPath: string): Promise<boolean> {
+    try {
+      const data = JSON.parse(readFileSync(configPath, 'utf-8'));
+      return typeof data === 'object' && !!data.rules;
+    } catch {
+      return false;
+    }
   }
 }
