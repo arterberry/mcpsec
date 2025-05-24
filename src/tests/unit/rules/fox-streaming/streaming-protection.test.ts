@@ -53,7 +53,7 @@ describe('fox-streaming-protection rule', () => {
 
             mockContext.mcpServer.tools = [regularTool];
 
-            const violations = await foxStreamingProtool.check(mockContext);
+            const violations = await foxStreamingProtection.check(mockContext);
 
             TestHelpers.expectNoViolations(violations, 'fox-streaming-protection');
         });

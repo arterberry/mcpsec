@@ -77,8 +77,8 @@ describe('injection-detection rule', () => {
 
         it('should detect command injection in spawn calls', async () => {
             const vulnerableCode = `
-        function executeCommand(params.command) {
-          return spawn('sh', ['-c', params.command]);
+        function executeCommand(command) {
+          return spawn('sh', ['-c', command]);
         }
       `;
 
@@ -159,7 +159,7 @@ describe('injection-detection rule', () => {
         it('should detect SQL-like template literals with unsanitized input', async () => {
             const vulnerableCode = `
         function buildQuery(userId) {
-          return \`SELECT * FROM users WHERE id = \${params.userId}\`;
+          return \`SELECT * FROM users WHERE id = \${userId}\`;
         }
       `;
 
@@ -175,7 +175,7 @@ describe('injection-detection rule', () => {
         it('should detect command-like template literals with unsanitized input', async () => {
             const vulnerableCode = `
         function buildCommand(filename) {
-          return \`rm \${request.filename}\`;
+          return \`rm \${filename}\`;
         }
       `;
 
@@ -247,3 +247,4 @@ describe('injection-detection rule', () => {
         });
     });
 });
+
