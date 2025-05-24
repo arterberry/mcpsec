@@ -267,15 +267,11 @@ function checkConvivaPrivacy(context: AnalysisContext): RuleViolation[] {
     );
 
     if (!hasConsentHandling) {
-        context.sourceFiles.forEach(file => {
-            violations.push({
-                ruleId: 'conviva-validation',
-                severity: 'warning',
-                message: 'No user consent handling found for Conviva analytics',
-                fix: 'Implement user consent collection before sending analytics data',
-                file: file.path,
-                evidence: `File content: ${file.content.slice(0, 100)}...`
-            });
+        violations.push({
+            ruleId: 'conviva-validation',
+            severity: 'warning',
+            message: 'No user consent handling found for Conviva analytics',
+            fix: 'Implement user consent collection before sending analytics data'
         });
     }
 
@@ -299,6 +295,11 @@ function checkConvivaPrivacy(context: AnalysisContext): RuleViolation[] {
 async function checkConvivaToolSecurity(tool: any, context: AnalysisContext): Promise<RuleViolation[]> {
     const violations: RuleViolation[] = [];
 
+    // Check for customer key protection - find implementation file first
+    const implFile = context.sourceFiles.find(file =>
+        file.content.includes(tool.name)
+    );
+
     // Check for proper session ID validation
     if (!hasSessionIdValidation(tool)) {
         violations.push({
@@ -310,11 +311,6 @@ async function checkConvivaToolSecurity(tool: any, context: AnalysisContext): Pr
             file: implFile?.path
         });
     }
-
-    // Check for customer key protection
-    const implFile = context.sourceFiles.find(file =>
-        file.content.includes(tool.name)
-    );
 
     if (implFile) {
         const keyViolations = checkCustomerKeyHandling(implFile, tool);
@@ -369,20 +365,3 @@ export const convivaValidation: MCPSecurityRule = {
         return violations;
     }
 };
-
-export const convivaValidation = {
-  id: 'conviva-validation',
-  name: 'Conviva Integration Validation',
-  description: 'Validates Conviva integration for streaming tools',
-  severity: 'warning',
-  category: 'fox-streaming',
-  mandatory: false,
-
-  async check(context: AnalysisContext): Promise<RuleViolation[]> {
-    if (!context.config.foxCorp?.convivaIntegration) {
-      return [];
-    }
-    return [];
-  }
-} as MCPSecurityRule;
-

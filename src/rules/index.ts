@@ -1,48 +1,19 @@
-// Import all rules for the analyzer to use
-import { foxStreamingProtection } from './fox-streaming/streaming-protection';
-import { injectionDetection } from './input-validation/injection-detection';
-import { auditLoggingRequirements } from './audit/logging-requirements';
-
-// Import and export other rules as they're created
+// Import all rules for the analyzer
 import { MCPSecurityRule } from '../core/types';
+
+// Fox streaming rules
 import { foxStreamingProtection } from './fox-streaming/streaming-protection';
+import { convivaValidation } from './fox-streaming/conviva-validation';
+import { harSecurity } from './fox-streaming/har-security';
+
+// Input validation rules
 import { injectionDetection } from './input-validation/injection-detection';
-import { auditLoggingRequirements } from './audit/logging-requirements';
-
-// Authentication rules
-export { authRequired } from './authentication/auth-required';
-export { roleValidation } from './authentication/role-validation';
-// Removed redundant imports
-// Removed redundant imports
-
-// Input validation rules
-export { sanitizationRequired } from './input-validation/sanitization';
-export { parameterValidation } from './input-validation/parameter-validation';
-// Removed redundant imports
-// Removed redundant imports
-
-// Authorization rules
-export { permissionChecks } from './authorization/permission-checks';
-export { resourceAccess } from './authorization/resource-access';
-// Removed redundant imports
-// Removed redundant imports
-
-// Rate limiting rules
-export { rateLimitEnforcement } from './rate-limiting/rate-limit-enforcement';
-// Removed redundant imports
-
-// Conviva and HAR specific rules (for Fox Corp)
-export { convivaValidation } from './fox-streaming/conviva-validation';
-export { harSecurity } from './fox-streaming/har-security';
-// Removed redundant imports
-// Removed redundant imports
-=======
-import { authRequired } from './authentication/auth-required';
-import { roleValidation } from './authentication/role-validation';
-
-// Input validation rules
 import { sanitizationRequired } from './input-validation/sanitization';
 import { parameterValidation } from './input-validation/parameter-validation';
+
+// Authentication rules
+import { authRequired } from './authentication/auth-required';
+import { roleValidation } from './authentication/role-validation';
 
 // Authorization rules
 import { permissionChecks } from './authorization/permission-checks';
@@ -51,21 +22,39 @@ import { resourceAccess } from './authorization/resource-access';
 // Rate limiting rules
 import { rateLimitEnforcement } from './rate-limiting/rate-limit-enforcement';
 
-// Conviva and HAR specific rules (for Fox Corp)
-import { convivaValidation } from './fox-streaming/conviva-validation';
-import { harSecurity } from './fox-streaming/har-security';
+// Audit rules
+import { auditLoggingRequirements } from './audit/logging-requirements';
 
+// Export all rules
 export {
   foxStreamingProtection,
+  convivaValidation,
+  harSecurity,
   injectionDetection,
-  auditLoggingRequirements,
-  authRequired,
-  roleValidation,
   sanitizationRequired,
   parameterValidation,
+  authRequired,
+  roleValidation,
   permissionChecks,
   resourceAccess,
   rateLimitEnforcement,
-  convivaValidation,
-  harSecurity
+  auditLoggingRequirements
 };
+
+// Function to get all rules for the analyzer
+export function getAllRules(): MCPSecurityRule[] {
+  return [
+    foxStreamingProtection,
+    convivaValidation,
+    harSecurity,
+    injectionDetection,
+    sanitizationRequired,
+    parameterValidation,
+    authRequired,
+    roleValidation,
+    permissionChecks,
+    resourceAccess,
+    rateLimitEnforcement,
+    auditLoggingRequirements
+  ];
+}
