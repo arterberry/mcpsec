@@ -1,0 +1,35 @@
+{
+  "rules": {
+    "auth-required": { "enabled": true, "severity": "error" },
+    "role-validation": { "enabled": true, "severity": "error" },
+    "input-sanitization": { "enabled": true, "severity": "error" },
+    "parameter-validation": { "enabled": true, "severity": "error" },
+    "injection-detection": { "enabled": true, "severity": "error" },
+    "permission-checks": { "enabled": true, "severity": "error" },
+    "resource-access": { "enabled": true, "severity": "error" },
+    "rate-limit-enforcement": { "enabled": true, "severity": "error" },
+    "audit-logging": { "enabled": true, "severity": "error" },
+    "fox-streaming-protection": { "enabled": true, "severity": "error" },
+    "conviva-validation": { "enabled": true, "severity": "error" },
+    "har-security": { "enabled": true, "severity": "error" },
+    "data-protection": { "enabled": true, "severity": "error" },
+    "credential-management": { "enabled": true, "severity": "error" }
+  },
+  "foxCorp": {
+    "streamingAssets": true,
+    "convivaIntegration": true,
+    "harValidation": true,
+    "auditLevel": "forensic"
+  },
+  "ignorePatterns": [
+    "node_modules/**",
+    "dist/**",
+    "*.test.ts",
+    "*.spec.ts",
+    "test-fixtures/**"
+  ],
+  "severity": {
+    "error": 2,
+    "warning": 1
+  }
+}
