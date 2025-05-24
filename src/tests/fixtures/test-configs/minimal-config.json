@@ -1,0 +1,10 @@
+{
+  "rules": {
+    "auth-required": { "enabled": true },
+    "injection-detection": { "enabled": true },
+    "parameter-validation": { "enabled": true }
+  },
+  "ignorePatterns": [
+    "node_modules/**"
+  ]
+}
