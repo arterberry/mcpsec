@@ -1,4 +1,4 @@
-import { MCPSecurityAnalyzer } from '../../src/core/analyzer';
+import { MCPSecurityAnalyzer } from '../../../src/core/analyzer';
 import { TestHelpers } from '../utils/test-helpers';
 import * as fs from 'fs';
 
@@ -15,7 +15,10 @@ describe('Rule Combinations and Interactions', () => {
         mockContext = TestHelpers.createMockAnalysisContext();
 
         // Setup default file system mocks
-        mockFs.readdirSync.mockReturnValue(['package.json', 'server.ts']);
+        mockFs.readdirSync.mockReturnValue([
+            { name: Buffer.from('package.json'), isDirectory: () => false } as unknown as fs.Dirent<Buffer>,
+            { name: Buffer.from('server.ts'), isDirectory: () => false } as unknown as fs.Dirent<Buffer>
+        ]);
         mockFs.statSync.mockReturnValue({ isDirectory: () => false } as any);
         mockFs.existsSync.mockReturnValue(true);
     });
