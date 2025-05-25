@@ -1,20 +1,28 @@
-import { program } from '../../../src/cli/index';
-import { MCPSecurityAnalyzer } from '../../../src/core/analyzer';
-import { ConfigManager } from '../../../src/core/config';
-import { SecurityReporter } from '../../../src/core/reporter';
+import { program } from '../../../cli/index';
+import { MCPSecurityAnalyzer } from '../../../core/analyzer';
+import { ConfigManager } from '../../../core/config';
+import { SecurityReporter } from '../../../core/reporter';
+import { TestHelpers } from '../../utils/test-helpers';
 
-jest.mock('../../../src/core/analyzer');
-jest.mock('../../../src/core/config');
-jest.mock('../../../src/core/reporter');
+// Mock the modules before importing
+jest.mock('../../../core/analyzer');
+jest.mock('../../../core/config');
+jest.mock('../../../core/reporter');
 jest.mock('fs');
 
+// Create proper mock types for singleton pattern
 const mockAnalyzer = MCPSecurityAnalyzer as jest.MockedClass<typeof MCPSecurityAnalyzer>;
-const mockConfigManager = ConfigManager as jest.MockedClass<typeof ConfigManager>;
 const mockReporter = SecurityReporter as jest.MockedClass<typeof SecurityReporter>;
+
+// For ConfigManager, we need to mock the singleton differently
+const mockConfigManager = ConfigManager as jest.Mocked<typeof ConfigManager>;
 
 describe('CLI', () => {
     let consoleLogSpy: jest.SpyInstance;
     let processExitSpy: jest.SpyInstance;
+    let mockConfigInstance: any;
+    let mockAnalyzerInstance: any;
+    let mockReporterInstance: any;
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -23,24 +31,27 @@ describe('CLI', () => {
             throw new Error(`Process exit called with code ${code}`);
         });
 
-        // Setup default mocks
-        const mockConfigInstance = {
-            loadConfig: jest.fn().mockReturnValue({}),
+        // Setup mock for ConfigManager singleton
+        mockConfigInstance = {
+            loadConfig: jest.fn().mockReturnValue(TestHelpers.createMockConfig()),
             initializeConfig: jest.fn(),
             validateConfig: jest.fn().mockResolvedValue(true)
         };
-        mockConfigManager.getInstance.mockReturnValue(mockConfigInstance as any);
+        
+        // Mock the getInstance static method
+        mockConfigManager.getInstance = jest.fn().mockReturnValue(mockConfigInstance);
 
-        const mockAnalyzerInstance = {
+        // Setup mocks for constructable classes
+        mockAnalyzerInstance = {
             analyze: jest.fn().mockResolvedValue([])
         };
-        mockAnalyzer.mockImplementation(() => mockAnalyzerInstance as any);
+        mockAnalyzer.mockImplementation(() => mockAnalyzerInstance);
 
-        const mockReporterInstance = {
+        mockReporterInstance = {
             generateReport: jest.fn().mockResolvedValue('Test Report'),
             writeReport: jest.fn()
         };
-        mockReporter.mockImplementation(() => mockReporterInstance as any);
+        mockReporter.mockImplementation(() => mockReporterInstance);
     });
 
     afterEach(() => {
@@ -50,9 +61,6 @@ describe('CLI', () => {
 
     describe('analyze command', () => {
         it('should analyze project with default options', async () => {
-            const mockAnalyzerInstance = new mockAnalyzer();
-            const mockReporterInstance = new mockReporter();
-
             try {
                 await program.parseAsync(['node', 'mcpsec', 'analyze', '/test/project']);
             } catch (error: any) {
@@ -60,7 +68,9 @@ describe('CLI', () => {
                 expect(error.message).toContain('Process exit called with code 0');
             }
 
+            expect(mockAnalyzer).toHaveBeenCalledWith(expect.any(Object));
             expect(mockAnalyzerInstance.analyze).toHaveBeenCalledWith('/test/project');
+            expect(mockReporter).toHaveBeenCalledWith(expect.any(Object));
             expect(mockReporterInstance.generateReport).toHaveBeenCalledWith([], 'text');
         });
 
@@ -69,7 +79,6 @@ describe('CLI', () => {
                 { ruleId: 'test-rule', severity: 'error', message: 'Test error' }
             ];
 
-            const mockAnalyzerInstance = new mockAnalyzer();
             mockAnalyzerInstance.analyze.mockResolvedValue(violations);
 
             try {
@@ -82,7 +91,6 @@ describe('CLI', () => {
         });
 
         it('should exit with code 0 when no violations', async () => {
-            const mockAnalyzerInstance = new mockAnalyzer();
             mockAnalyzerInstance.analyze.mockResolvedValue([]);
 
             try {
@@ -97,8 +105,6 @@ describe('CLI', () => {
         });
 
         it('should apply Fox Corp configuration when --fox-corp flag is used', async () => {
-            const mockConfigInstance = mockConfigManager.getInstance();
-
             try {
                 await program.parseAsync(['node', 'mcpsec', 'analyze', '/test/project', '--fox-corp']);
             } catch (error: any) {
@@ -116,8 +122,6 @@ describe('CLI', () => {
         });
 
         it('should write report to file when --output is specified', async () => {
-            const mockReporterInstance = new mockReporter();
-
             try {
                 await program.parseAsync([
                     'node', 'mcpsec', 'analyze', '/test/project',
@@ -134,8 +138,6 @@ describe('CLI', () => {
         });
 
         it('should generate report in specified format', async () => {
-            const mockReporterInstance = new mockReporter();
-
             try {
                 await program.parseAsync([
                     'node', 'mcpsec', 'analyze', '/test/project',
@@ -149,7 +151,6 @@ describe('CLI', () => {
         });
 
         it('should handle analysis errors gracefully', async () => {
-            const mockAnalyzerInstance = new mockAnalyzer();
             mockAnalyzerInstance.analyze.mockRejectedValue(new Error('Analysis failed'));
 
             try {
@@ -190,7 +191,6 @@ describe('CLI', () => {
                 { ruleId: 'test-rule', severity: 'warning', message: 'Test warning' }
             ];
 
-            const mockAnalyzerInstance = new mockAnalyzer();
             mockAnalyzerInstance.analyze.mockResolvedValue(violations);
 
             try {
@@ -206,8 +206,6 @@ describe('CLI', () => {
 
     describe('init command', () => {
         it('should initialize configuration with default template', async () => {
-            const mockConfigInstance = mockConfigManager.getInstance();
-
             try {
                 await program.parseAsync(['node', 'mcpsec', 'init']);
             } catch (error: any) {
@@ -221,8 +219,6 @@ describe('CLI', () => {
         });
 
         it('should initialize configuration with specified template', async () => {
-            const mockConfigInstance = mockConfigManager.getInstance();
-
             try {
                 await program.parseAsync([
                     'node', 'mcpsec', 'init', '/custom/path',
@@ -236,7 +232,6 @@ describe('CLI', () => {
         });
 
         it('should handle initialization errors', async () => {
-            const mockConfigInstance = mockConfigManager.getInstance();
             mockConfigInstance.initializeConfig.mockRejectedValue(new Error('Init failed'));
 
             try {
@@ -255,7 +250,7 @@ describe('CLI', () => {
     describe('rules command', () => {
         beforeEach(() => {
             // Mock the dynamic import
-            jest.doMock('../../../src/rules', () => ({
+            jest.doMock('../../../rules', () => ({
                 getAllRules: jest.fn().mockReturnValue([
                     {
                         id: 'test-rule-1',
@@ -320,7 +315,7 @@ describe('CLI', () => {
         });
 
         it('should handle rule listing errors', async () => {
-            jest.doMock('../../../src/rules', () => {
+            jest.doMock('../../../rules', () => {
                 throw new Error('Failed to load rules');
             });
 
@@ -339,7 +334,6 @@ describe('CLI', () => {
 
     describe('validate-config command', () => {
         it('should validate correct configuration', async () => {
-            const mockConfigInstance = mockConfigManager.getInstance();
             mockConfigInstance.validateConfig.mockResolvedValue(true);
 
             try {
@@ -355,7 +349,6 @@ describe('CLI', () => {
         });
 
         it('should handle invalid configuration', async () => {
-            const mockConfigInstance = mockConfigManager.getInstance();
             mockConfigInstance.validateConfig.mockResolvedValue(false);
 
             try {
@@ -370,7 +363,6 @@ describe('CLI', () => {
         });
 
         it('should handle validation errors', async () => {
-            const mockConfigInstance = mockConfigManager.getInstance();
             mockConfigInstance.validateConfig.mockRejectedValue(new Error('Validation error'));
 
             try {

@@ -24,15 +24,15 @@ export class MockFactory {
 
     static createAnalyzerMock() {
         return {
-            analyze: jest.fn().mockResolvedValue([]),
+            analyze: jest.fn<() => Promise<any[]>>().mockResolvedValue([]),
             buildAnalysisContext: jest.fn()
         };
     }
 
     static createReporterMock() {
         return {
-            generateReport: jest.fn().mockResolvedValue('mock report'),
-            writeReport: jest.fn().mockResolvedValue(undefined)
+            generateReport: jest.fn<() => Promise<string>>().mockResolvedValue('mock report'),
+            writeReport: jest.fn<() => Promise<void>>().mockResolvedValue(undefined)
         };
     }
 }

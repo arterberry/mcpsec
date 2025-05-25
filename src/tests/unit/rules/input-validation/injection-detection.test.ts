@@ -1,4 +1,4 @@
-import { injectionDetection } from '../../../../src/rules/input-validation/injection-detection';
+import { injectionDetection } from '../../../../../src/rules/input-validation/injection-detection';
 import { TestHelpers } from '../../../utils/test-helpers';
 
 describe('injection-detection rule', () => {

@@ -1,4 +1,4 @@
-import { RuleViolation, MCPSecConfig } from './types';
+import { MCPSecConfig } from './types';
 import { promises as fs } from 'fs';
 import chalk from 'chalk';
 
@@ -166,3 +166,13 @@ export class SecurityReporter {
       .replace(/'/g, '&#39;');
   }
 }
+
+export type RuleViolation = {
+    ruleId: string;
+    severity: 'error' | 'warning' | 'info';
+    message: string;
+    file?: string;
+    line?: number;
+    evidence?: string;
+    fix?: string;
+};

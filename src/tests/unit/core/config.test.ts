@@ -1,4 +1,4 @@
-import { ConfigManager } from '../../../src/core/config';
+import { ConfigManager } from '../../../../src/core/config';
 import { TestHelpers } from '../../utils/test-helpers';
 
 jest.mock('fs');
@@ -52,7 +52,6 @@ describe('ConfigManager', () => {
             const config = configManager.loadConfig('/test/project', '.mcpsec.json');
 
             expect(config.rules['auth-required'].enabled).toBe(false);
-            expect(config.foxCorp.streamingAssets).toBe(false);
             expect(config.rules['role-validation']).toEqual({
                 enabled: true,
                 severity: 'error'

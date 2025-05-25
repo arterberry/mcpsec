@@ -1,4 +1,6 @@
-import { MCPSecurityAnalyzer } from '../../../src/core/analyzer';
+// Update the import path if the analyzer is located elsewhere, e.g.:
+import { MCPSecurityAnalyzer } from '../../../core/analyzer';
+// Or, if the file does not exist, create 'src/core/analyzer.ts' and export MCPSecurityAnalyzer from it.
 import { TestHelpers } from '../../utils/test-helpers';
 import { MockFactory } from '../../utils/mock-factory';
 

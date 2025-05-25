@@ -1,5 +1,8 @@
-import { SecurityReporter } from '../../../src/core/reporter';
+import { SecurityReporter } from '../../../../src/core/reporter';
 import { TestHelpers } from '../../utils/test-helpers';
+
+// Import or define RuleViolation type for test usage
+import type { RuleViolation } from '../../../../src/core/reporter';
 
 jest.mock('fs', () => ({
     promises: {
@@ -101,7 +104,7 @@ describe('SecurityReporter', () => {
             });
 
             it('should escape XML special characters', async () => {
-                const violationsWithXML = [{
+                const violationsWithXML: RuleViolation[] = [{
                     ruleId: 'test-rule',
                     severity: 'error',
                     message: 'Error with <script> & "quotes"',

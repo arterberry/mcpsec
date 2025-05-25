@@ -1,4 +1,4 @@
-import { foxStreamingProtection } from '../../../../src/rules/fox-streaming/streaming-protection';
+import { foxStreamingProtection } from '../../../../../src/rules/fox-streaming/streaming-protection';
 import { TestHelpers } from '../../../utils/test-helpers';
 
 describe('fox-streaming-protection rule', () => {

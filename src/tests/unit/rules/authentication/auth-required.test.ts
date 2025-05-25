@@ -1,4 +1,4 @@
-import { authRequired } from '../../../../src/rules/authentication/auth-required';
+import { authRequired } from '../../../../../src/rules/authentication/auth-required';
 import { TestHelpers } from '../../../utils/test-helpers';
 
 describe('auth-required rule', () => {

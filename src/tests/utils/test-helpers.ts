@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import { AnalysisContext, MCPServerInfo, SourceFile, MCPSecConfig } from '../../src/core/types';
+import { AnalysisContext, MCPServerInfo, SourceFile, MCPSecConfig } from '../../../src/core/types';
 
 export interface TestFixture {
   name: string;
